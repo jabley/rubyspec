@@ -1,14 +1,14 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 as_superuser do
   describe "File.chown" do
     before :each do
       @fname = tmp('file_chown_test')
-      File.open(@fname, 'w') { }
+      touch @fname
     end
 
     after :each do
-      File.delete @fname if File.exist? @fname
+      rm_r @fname
     end
 
     platform_is :windows do
@@ -78,7 +78,7 @@ as_superuser do
 
     after :each do
       @file.close unless @file.closed?
-      File.delete @fname if File.exist? @fname
+      rm_r @fname
     end
 
     platform_is :windows do
@@ -132,5 +132,17 @@ as_superuser do
     it "returns 0" do
       @file.chown(nil, nil).should == 0
     end
+  end
+end
+
+ruby_version_is "1.9" do
+  describe "File.chown" do
+    it "needs to be reviewed for spec completeness"
+  end
+end
+
+ruby_version_is "1.9" do
+  describe "File#chown" do
+    it "needs to be reviewed for spec completeness"
   end
 end

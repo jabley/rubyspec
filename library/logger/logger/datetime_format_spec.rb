@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../../spec_helper'
-require File.dirname(__FILE__) + '/../fixtures/common'
+require File.expand_path('../../../../spec_helper', __FILE__)
+require File.expand_path('../../fixtures/common', __FILE__)
 
 describe "Logger#datetime_format" do
   before :each do
@@ -9,6 +9,7 @@ describe "Logger#datetime_format" do
   end
 
   after :each do
+    @logger.close
     @log_file.close unless @log_file.closed?
     File.unlink(@path) if File.exists?(@path)
   end
@@ -32,6 +33,7 @@ describe "Logger#datetime_format=" do
   end
 
   after :each do
+    @logger.close
     @log_file.close unless @log_file.closed?
     File.unlink(@path) if File.exists?(@path)
   end

@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes.rb'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
 
 describe "String#tr_s" do
   it "returns a string processed according to tr with newly duplicate characters removed" do
@@ -45,7 +45,7 @@ describe "String#tr_s" do
   end
 
   it "returns subclass instances when called on a subclass" do
-    StringSpecs::MyString.new("hello").tr_s("e", "a").class.should == StringSpecs::MyString
+    StringSpecs::MyString.new("hello").tr_s("e", "a").should be_kind_of(StringSpecs::MyString)
   end
 
   it "taints the result when self is tainted" do

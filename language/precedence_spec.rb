@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.expand_path('../../spec_helper', __FILE__)
 
 # Specifying the behavior of operators in combination could
 # lead to combinatorial explosion. A better way seems to be
@@ -428,19 +428,19 @@ describe "Operators" do
   end
 
   it "= %= /= -= += |= &= >>= <<= *= &&= ||= **= have higher precedence than defined? operator" do
-    (defined? a =   10).should_not == nil
-    (defined? a %=  10).should_not == nil
-    (defined? a /=  10).should_not == nil
-    (defined? a -=  10).should_not == nil
-    (defined? a +=  10).should_not == nil
-    (defined? a |=  10).should_not == nil
-    (defined? a &=  10).should_not == nil
-    (defined? a >>= 10).should_not == nil
-    (defined? a <<= 10).should_not == nil
-    (defined? a *=  10).should_not == nil
-    (defined? a &&= 10).should_not == nil
-    (defined? a ||= 10).should_not == nil
-    (defined? a **= 10).should_not == nil
+    (defined? a =   10).should == "assignment"
+    (defined? a %=  10).should == "assignment"
+    (defined? a /=  10).should == "assignment"
+    (defined? a -=  10).should == "assignment"
+    (defined? a +=  10).should == "assignment"
+    (defined? a |=  10).should == "assignment"
+    (defined? a &=  10).should == "assignment"
+    (defined? a >>= 10).should == "assignment"
+    (defined? a <<= 10).should == "assignment"
+    (defined? a *=  10).should == "assignment"
+    (defined? a &&= 10).should == "assignment"
+    (defined? a ||= 10).should == "assignment"
+    (defined? a **= 10).should == "assignment"
   end
 
   # XXX: figure out how to test it

@@ -34,4 +34,17 @@ module ExceptionSpecs
       nil
     end
   end
-end  
+
+  class ConstructorException < Exception
+
+    def initialize
+    end
+
+  end
+
+  class OverrideToS < RuntimeError
+    def to_s
+      "this is from #to_s"
+    end
+  end
+end

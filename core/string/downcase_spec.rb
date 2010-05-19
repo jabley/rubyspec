@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes.rb'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
 
 describe "String#downcase" do
   it "returns a copy of self with all uppercase letters downcased" do
@@ -27,7 +27,7 @@ describe "String#downcase" do
   end
 
   it "returns a subclass instance for subclasses" do
-    StringSpecs::MyString.new("FOObar").downcase.class.should == StringSpecs::MyString
+    StringSpecs::MyString.new("FOObar").downcase.should be_kind_of(StringSpecs::MyString)
   end
 end
 

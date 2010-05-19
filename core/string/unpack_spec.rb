@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes.rb'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
 
 if ENV['MRI'] then
   $: << 'kernel/core'
@@ -107,7 +107,6 @@ describe "String#unpack with 'Q' and 'q' directives" do
     it "returns an array in little-endian (native format) order by decoding self according to the format string" do
       "\xF3\x02\x00\x42\x32\x23\xB3\xF0".unpack('Q').should == [17344245288696546035]
       "\xF3\x02".unpack('Q*').should == []
-      "\xF3\xFF\xFF\xFF\x32\x0B\x02\x00".unpack('Q2').should == [575263624658931]
       "\xF3\x02\xC0\x42\x3A\x87\xF3\x00\xFA\xFF\x00\x02\x32\x87\xF3\xEE".unpack('Q*').should ==
         [68547103638422259, 17218254449219272698]
       "\xF3\x02\x00\x42".unpack('q').should == [nil]
@@ -119,13 +118,24 @@ describe "String#unpack with 'Q' and 'q' directives" do
         [68547068192358922, -1228489624490278918]
       "\x7F\x77\x77\x77\x77\x77\x77\x77".unpack('q0Q*').should == [8608480567731124095]
     end
+
+    ruby_version_is "" ... "1.8.8" do
+      it "does NOT pad nil when the string is short" do
+        "\xF3\xFF\xFF\xFF\x32\x0B\x02\x00".unpack('Q2').should == [575263624658931]
+      end
+    end
+
+    ruby_version_is "1.8.8" do
+      it "pads nil when the string is short" do
+        "\xF3\xFF\xFF\xFF\x32\x0B\x02\x00".unpack('Q2').should == [575263624658931, nil]
+      end
+    end
   end
 
   big_endian do
     it "returns an array in big-endian (native format) order by decoding self according to the format string" do
       "\xF3\x02\x00\x42\x32\x23\xB3\xF0".unpack('Q').should == [17510558585478951920]
       "\xF3\x02".unpack('Q*').should == []
-      "\xF3\xFF\xFF\xFF\x32\x0B\x02\x00".unpack('Q2').should == [17582052941799031296]
       "\xF3\x02\xC0\x42\x3A\x87\xF3\x00\xFA\xFF\x00\x02\x32\x87\xF3\xEE".unpack('Q*').should ==
         [17510769691852272384, 18086174637980906478]
       "\xF3\x02\x00\x42".unpack('q').should == [nil]
@@ -136,6 +146,18 @@ describe "String#unpack with 'Q' and 'q' directives" do
       "\x0A\x02\x00\x02\x32\x87\xF3\x00\xFA\xFF\x00\x02\x32\x87\xF3\xEE".unpack('q*').should ==
         [721138899770405632, -360569435728645138]
       "\x7F\x77\x77\x77\x77\x77\x77\x77".unpack('q0Q*').should == [9184941320034547575]
+    end
+
+    ruby_version_is "" ... "1.8.8" do
+      it "does NOT pad nil when the string is short" do
+        "\xF3\xFF\xFF\xFF\x32\x0B\x02\x00".unpack('Q2').should == [17582052941799031296]
+      end
+    end
+
+    ruby_version_is "1.8.8" do
+      it "pads nil when the string is short" do
+        "\xF3\xFF\xFF\xFF\x32\x0B\x02\x00".unpack('Q2').should == [17582052941799031296, nil]
+      end
     end
   end
 
@@ -151,15 +173,15 @@ describe "String#unpack with 'Q' and 'q' directives" do
     it "returns Bignums for big numeric values on big-endian platforms" do
       "\xF3\x02\x00\x42\x32\x23\xB3\xF0".unpack('Q')[0].class.should ==
         17344245288696546035.class
-      "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFE".unpack('q')[0].class.should == Fixnum
+      "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFE".unpack('q')[0].should be_kind_of(Fixnum)
     end
   end
 
   it "returns Fixnums for small numeric values" do
     "\x00\x00\x00\x00\x00\x00\x00\x00".unpack('Q').should == [0]
     "\x00\x00\x00\x00\x00\x00\x00\x00".unpack('q').should == [0]
-    "\x00\x00\x00\x00\x00\x00\x00\x00".unpack('Q')[0].class.should == Fixnum
-    "\x00\x00\x00\x00\x00\x00\x00\x00".unpack('q')[0].class.should == Fixnum
+    "\x00\x00\x00\x00\x00\x00\x00\x00".unpack('Q')[0].should be_kind_of(Fixnum)
+    "\x00\x00\x00\x00\x00\x00\x00\x00".unpack('q')[0].should be_kind_of(Fixnum)
   end
 end
 
@@ -337,6 +359,74 @@ describe "String#unpack with 'IiLlSs' directives" do
       end
     end
   end
+
+  it "uses sizeof(int) as an integer" do
+    little_endian do
+      "\000\000\001\000".unpack("i").should == [65536]
+      "\000\000\001\000\000\000\001\000".unpack("i2").should == [65536, 65536]
+      "\000\000\001\000\000\000\001\000hello".unpack("i2a5").should == [65536, 65536, "hello"]
+      "\377\377\377\377".unpack("i").should == [-1]
+      "\377\377\377\377".unpack("I").should == [4294967295]
+      "\000\000\000\000\000\000\000\000".unpack("I*").should == [0,0]
+    end
+    big_endian do
+      "\000\001\000\000".unpack("i").should == [65536]
+      "\000\001\000\000\000\001\000\000".unpack("i2").should == [65536, 65536]
+      "\000\001\000\000\000\001\000\000hello".unpack("i2a5").should == [65536, 65536, "hello"]
+      "\377\377\377\377".unpack("i").should == [-1]
+      "\377\377\377\377".unpack("I").should == [4294967295]
+      "\000\000\000\000\000\000\000\000".unpack("I*").should == [0,0]
+    end
+  end
+
+  it "ignores the result if there aren't 4 bytes" do
+    little_endian do
+      "\000".unpack("I").should == [nil]
+      "\000".unpack("I2").should == [nil, nil]
+      "\000".unpack("I*").should == []
+      "\000\000\000\000\000\000\000\000\000".unpack("I*").should == [0,0]
+    end
+    big_endian do
+      "\000".unpack("I").should == [nil]
+      "\000".unpack("I2").should == [nil, nil]
+      "\000".unpack("I*").should == []
+      "\000\000\000\000\000\000\000\000\000".unpack("I*").should == [0,0]
+    end
+  end
+end
+
+describe "String#unpack with 'lL'" do
+  it "uses 4 bytes for an integer" do
+    little_endian do
+      "\000\000\001\000".unpack("l").should == [65536]
+      "\000\000\001\000\000\000\001\000".unpack("l2").should == [65536, 65536]
+      "\000\000\001\000\000\000\001\000hello".unpack("l2a5").should == [65536, 65536, "hello"]
+      "\377\377\377\377".unpack("l").should == [-1]
+      "\377\377\377\377".unpack("L").should == [4294967295]
+    end
+    big_endian do
+      "\000\001\000\000".unpack("l").should == [65536]
+      "\000\001\000\000\000\001\000\000".unpack("l2").should == [65536, 65536]
+      "\000\001\000\000\000\001\000\000hello".unpack("l2a5").should == [65536, 65536, "hello"]
+      "\377\377\377\377".unpack("l").should == [-1]
+      "\377\377\377\377".unpack("L").should == [4294967295]
+    end
+  end
+
+  it "ignores the result if there aren't 4 bytes" do
+    little_endian do
+      "\000".unpack("L").should == [nil]
+      "\000".unpack("L2").should == [nil, nil]
+      "\000".unpack("L*").should == []
+      "\000\000\000\000\000\000\000\000\000".unpack("I*").should == [0,0]
+    end
+    big_endian do
+      "\000".unpack("L").should == [nil]
+      "\000".unpack("L2").should == [nil, nil]
+      "\000".unpack("L*").should == []
+      "\000\000\000\000\000\000\000\000\000".unpack("I*").should == [0,0]
+    end
+  end
 end
 
 describe "String#unpack with 'U' directive" do
@@ -392,7 +482,7 @@ describe "String#unpack with '@' directive" do
 end
 
 describe "String#unpack with 'M' directive" do
-  it "returns an array by decoding self according to the format string" do
+  it "decodes the rest of the string as MIMEs quoted-printable" do
     "".unpack('M').should == [""]
     "=5".unpack('Ma').should == ["", ""]
     "abc=".unpack('M').should == ["abc"]
@@ -409,6 +499,16 @@ describe "String#unpack with 'M' directive" do
     "=$$=4@=47".unpack('MMMMM').should == ["", "$$", "@G", "", ""]
     "=$$=4@=47".unpack('M5000').should == [""]
     "=4@".unpack('MMM').should == ["", "@", ""]
+  end
+
+  it "decodes across new lines" do
+    input = "A fax has arrived from remote ID ''.=0D=0A-----------------------=\r\n-------------------------------------=0D=0ATime: 3/9/2006 3:50:52=\r\n PM=0D=0AReceived from remote ID: =0D=0AInbound user ID XXXXXXXXXX, r=\r\nouting code XXXXXXXXX=0D=0AResult: (0/352;0/0) Successful Send=0D=0AP=\r\nage record: 1 - 1=0D=0AElapsed time: 00:58 on channel 11=0D=0A"
+
+    expected = "A fax has arrived from remote ID ''.\r\n------------------------------------------------------------\r\nTime: 3/9/2006 3:50:52 PM\r\nReceived from remote ID: \r\nInbound user ID XXXXXXXXXX, routing code XXXXXXXXX\r\nResult: (0/352;0/0) Successful Send\r\nPage record: 1 - 1\r\nElapsed time: 00:58 on channel 11\r\n"
+
+    input.unpack("M").first.should == expected
+
+    "abc=02def=\ncat=\n=01=\n".unpack("M9M3M4").should == ["abc\002defcat\001", "", ""]
   end
 end
 

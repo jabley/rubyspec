@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/marshal_data'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/marshal_data', __FILE__)
 
 describe "Marshal::load" do
   it "loads a extended_struct having fields with same objects" do
@@ -40,11 +40,11 @@ describe "Marshal::load" do
 
   it "loads a user_object" do
     obj = UserObject.new
-    Marshal.load("\004\bo:\017UserObject\000").class.should == UserObject
+    Marshal.load("\004\bo:\017UserObject\000").should be_kind_of(UserObject)
   end
 
   it "loads a object" do
-    Marshal.load("\004\bo:\vObject\000").class.should == Object
+    Marshal.load("\004\bo:\vObject\000").should be_kind_of(Object)
   end
 
   it "loads an extended Object" do
@@ -110,6 +110,11 @@ describe "Marshal::load" do
     obj = 1.1867345e+22
     Marshal.load("\004\bf\0361.1867344999999999e+22\000\344@").should ==
       obj
+  end
+
+  it "raises an ArgumentError when the dumped data is truncated" do
+    obj = {:first => 1, :second => 2, :third => 3}
+    lambda { Marshal.load(Marshal.dump(obj)[0, 5]) }.should raise_error(ArgumentError)
   end
 
   ruby_version_is "1.9" do
@@ -286,6 +291,17 @@ describe "Marshal::load" do
       obj
   end
 
+  it "preserves hash ivars when hash contains a string having ivar" do
+    s = 'string'
+    s.instance_variable_set :@string_ivar, 'string ivar'
+    h = { :key => s }
+    h.instance_variable_set :@hash_ivar, 'hash ivar'
+
+    unmarshalled = Marshal.load Marshal.dump(h)
+    unmarshalled.instance_variable_get(:@hash_ivar).should == 'hash ivar'
+    unmarshalled[:key].instance_variable_get(:@string_ivar).should == 'string ivar'
+  end
+
   it "raises a TypeError with bad Marshal version" do
     marshal_data = '\xff\xff'
     marshal_data[0] = (Marshal::MAJOR_VERSION).chr
@@ -301,22 +317,91 @@ describe "Marshal::load" do
   end
   
   it "raises EOFError on loading an empty file" do
-    temp_file = tmp("marshal.rubinius.tmp.#{Process.pid}")
+    temp_file = tmp("marshal.rubyspec.tmp.#{Process.pid}")
     file = File.new(temp_file, "w+")
     begin
-      # TODO: This should be in an ensure block, but because of a bug in
-      # Rubinius that can't be done yet.
-      File.unlink(temp_file)
-
       lambda { Marshal.load(file) }.should raise_error(EOFError)
     ensure
       file.close
+      File.unlink(temp_file)
     end
   end
 
+  # Note: Ruby 1.9 should be compatible with older marshal format
   MarshalSpec::DATA.each do |description, (object, marshal, attributes)|
     it "loads a #{description}" do
       Marshal.load(marshal).should == object
     end
   end
+
+  ruby_version_is "1.9" do
+    MarshalSpec::DATA_19.each do |description, (object, marshal, attributes)|
+      it "loads a #{description}" do
+        Marshal.load(marshal).should == object
+      end
+    end
+  end
+
+  it "returns an untainted object if source is untainted" do
+    x = Object.new
+    y = Marshal.load(Marshal.dump(x))
+    y.tainted?.should be_false
+  end
+  
+  it "returns a tainted object if source is tainted" do
+    x = Object.new
+    x.taint
+    s = Marshal.dump(x)
+    y = Marshal.load(s)
+    y.tainted?.should be_true
+    
+    # note that round-trip via Marshal does not preserve
+    # the taintedness at each level of the nested structure
+    y = Marshal.load(Marshal.dump([[x]]))
+    y.tainted?.should be_true
+    y.first.tainted?.should be_true
+    y.first.first.tainted?.should be_true
+    
+  end
+  
+  it "preserves taintedness of nested structure" do
+    x = Object.new
+    a = [[x]]
+    x.taint
+    y = Marshal.load(Marshal.dump(a))
+    y.tainted?.should be_true
+    y.first.tainted?.should be_true
+    y.first.first.tainted?.should be_true
+  end
+
+  ruby_version_is "1.9" do
+    
+    it "returns a trusted object if source is trusted" do
+      x = Object.new
+      y = Marshal.load(Marshal.dump(x))
+      y.untrusted?.should be_false
+    end
+
+    it "returns an untrusted object if source is untrusted" do
+      x = Object.new
+      x.untrust
+      y = Marshal.load(Marshal.dump(x))
+      y.untrusted?.should be_true
+
+      # note that round-trip via Marshal does not preserve
+      # the untrustedness at each level of the nested structure
+      y = Marshal.load(Marshal.dump([[x]]))
+      y.untrusted?.should be_true
+      y.first.untrusted?.should be_true
+      y.first.first.untrusted?.should be_true
+
+    end
+    
+  end
+  
+
+end
+
+describe "Marshal.load" do
+  it "needs to be reviewed for spec completeness"
 end

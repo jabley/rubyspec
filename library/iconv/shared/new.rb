@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/initialize_exceptions.rb'
-require File.dirname(__FILE__) + '/../fixtures/classes.rb'
+require File.expand_path('../initialize_exceptions.rb', __FILE__)
+require File.expand_path('../../fixtures/classes.rb', __FILE__)
 
 describe :iconv_new, :shared => true do
   it "creates a new encoding converter" do
@@ -14,7 +14,7 @@ describe :iconv_new, :shared => true do
   it "when called from a subclass of Iconv instantiates an object of that class" do
     obj = IconvSpecs::IconvSubclass.send(@method, "us-ascii", "us-ascii")
     begin
-      obj.class.should == IconvSpecs::IconvSubclass
+      obj.should be_kind_of(IconvSpecs::IconvSubclass)
     ensure
       obj.close
     end

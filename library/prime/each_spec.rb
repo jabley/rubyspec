@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/shared/each'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../shared/each', __FILE__)
 require 'timeout'
 
 # force reload for Prime::method_added and Prime::instance
@@ -67,7 +67,7 @@ describe "Prime#each", "when an instance created via Prime.new" do
 
   it "returns an evaluated value of the given block" do
     expected = Object.new
-    Prime.new.each{ break expected }.should equal?(expected)
+    Prime.new.each{ break expected }.should equal(expected)
   end
 
   it "returns an enumerator (or a compatible object) if no block given" do

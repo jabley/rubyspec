@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Kernel.catch" do
   it "executes its block" do
@@ -69,7 +69,7 @@ describe "Kernel.catch" do
   ruby_version_is ""..."1.9" do
     it "raises TypeError if the argument is not a symbol" do
       lambda {
-        catch Object.new {}
+        catch(Object.new) {}
       }.should raise_error(TypeError)
     end
 

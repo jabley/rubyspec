@@ -1,10 +1,10 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 # cosine : (-Inf, Inf) --> (-1.0, 1.0)
 describe "Math.cos" do  
   it "returns a float" do 
-    Math.cos(Math::PI).class.should == Float
+    Math.cos(Math::PI).should be_kind_of(Float)
   end 
 
   it "returns the cosine of the argument expressed in radians" do    

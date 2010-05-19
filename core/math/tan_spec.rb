@@ -1,9 +1,9 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Math.tan" do
   it "returns a float" do
-    Math.tan(1.35).class.should == Float
+    Math.tan(1.35).should be_kind_of(Float)
   end
   
   it "returns the tangent of the argument" do

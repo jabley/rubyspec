@@ -1,6 +1,6 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
-ruby_version_is "1.9" do
+ruby_version_is "1.8.8" do
   describe "MatchData#regexp" do
     it "returns a Regexp object" do
       m = 'haystack'.match(/hay/)

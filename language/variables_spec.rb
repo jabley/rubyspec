@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/variables'
+require File.expand_path('../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/variables', __FILE__)
 
 # TODO: partition these specs into distinct cases based on the
 # real parsed forms, not the superficial code forms.
@@ -152,6 +152,10 @@ describe "Basic assignment" do
     a,b,*c = *[*[1,2]]; [a,b,c].should == [1, 2, []]
   end
 
+  it "calls to_a on the given argument when using a splat" do
+    a,b = *VariablesSpecs::ArrayLike.new([1,2]); [a,b].should == [1,2]
+  end
+
   it "supports the {|r,| } form of block assignment" do
     f = lambda {|r,| r.should == []}
     f.call([], *[])
@@ -206,6 +210,157 @@ describe "Assignment using expansion" do
   end
 end
 
+describe "Basic multiple assignment" do
+  describe "with a single RHS value" do
+    it "does not call #to_ary on an Array instance" do
+      x = [1, 2]
+      x.should_not_receive(:to_ary)
+
+      a, b = x
+      a.should == 1
+      b.should == 2
+    end
+
+    it "does not call #to_a on an Array instance" do
+      x = [1, 2]
+      x.should_not_receive(:to_a)
+
+      a, b = x
+      a.should == 1
+      b.should == 2
+    end
+
+    it "does not call #to_ary on an Array subclass instance" do
+      x = VariablesSpecs::ArraySubclass.new [1, 2]
+      x.should_not_receive(:to_ary)
+
+      a, b = x
+      a.should == 1
+      b.should == 2
+    end
+
+    it "does not call #to_a on an Array subclass instance" do
+      x = VariablesSpecs::ArraySubclass.new [1, 2]
+      x.should_not_receive(:to_a)
+
+      a, b = x
+      a.should == 1
+      b.should == 2
+    end
+
+    it "calls #to_ary on an object" do
+      x = mock("single rhs value for masgn")
+      x.should_receive(:to_ary).and_return([1, 2])
+
+      a, b = x
+      a.should == 1
+      b.should == 2
+    end
+
+    it "does not call #to_a on an object if #to_ary is not defined" do
+      x = mock("single rhs value for masgn")
+      x.should_not_receive(:to_a)
+
+      a, b = x
+      a.should == x
+      b.should be_nil
+    end
+
+    it "does not call #to_a on a String" do
+      x = "one\ntwo"
+
+      a, b = x
+      a.should == x
+      b.should be_nil
+    end
+  end
+
+  describe "with a splatted single RHS value" do
+    it "does not call #to_ary on an Array instance" do
+      x = [1, 2]
+      x.should_not_receive(:to_ary)
+
+      a, b = *x
+      a.should == 1
+      b.should == 2
+    end
+
+    it "does not call #to_a on an Array instance" do
+      x = [1, 2]
+      x.should_not_receive(:to_a)
+
+      a, b = *x
+      a.should == 1
+      b.should == 2
+    end
+
+    it "does not call #to_ary on an Array subclass instance" do
+      x = VariablesSpecs::ArraySubclass.new [1, 2]
+      x.should_not_receive(:to_ary)
+
+      a, b = *x
+      a.should == 1
+      b.should == 2
+    end
+
+    it "does not call #to_a on an Array subclass instance" do
+      x = VariablesSpecs::ArraySubclass.new [1, 2]
+      x.should_not_receive(:to_a)
+
+      a, b = *x
+      a.should == 1
+      b.should == 2
+    end
+
+    it "calls #to_a on an object if #to_ary is not defined" do
+      x = mock("single splatted rhs value for masgn")
+      x.should_receive(:to_a).and_return([1, 2])
+
+      a, b = *x
+      a.should == 1
+      b.should == 2
+    end
+
+    ruby_version_is ""..."1.9" do
+      it "calls #to_ary on an object" do
+        x = mock("single splatted rhs value for masgn")
+        x.should_receive(:to_ary).and_return([1, 2])
+
+        a, b = *x
+        a.should == 1
+        b.should == 2
+      end
+
+      it "calls #to_a on a String" do
+        x = "one\ntwo"
+
+        a, b = *x
+        a.should == "one\n"
+        b.should == "two"
+      end
+    end
+
+    ruby_version_is "1.9" do
+      it "does not call #to_ary on an object" do
+        x = mock("single splatted rhs value for masgn")
+        x.should_not_receive(:to_ary)
+
+        a, b = *x
+        a.should == x
+        b.should be_nil
+      end
+
+      it "does not call #to_a on a String" do
+        x = "one\ntwo"
+
+        a, b = *x
+        a.should == x
+        b.should be_nil
+      end
+    end
+  end
+end
+
 describe "Assigning multiple values" do
   it "allows parallel assignment" do
     a, b = 1, 2
@@ -221,6 +376,15 @@ describe "Assigning multiple values" do
     a, b = b, a
     a.should == 2
     b.should == 1
+  end
+
+  not_compliant_on :rubinius do
+    it "returns the rhs values used for assignment as an array" do
+      o = Object.new
+      def o.masgn; a, b, c = 1, 2, 3; end
+
+      o.masgn.should == [1,2,3]
+    end
   end
 
   it "evaluates rhs left-to-right" do
@@ -432,7 +596,7 @@ describe "Conditional assignment" do
   end
 end
 
-describe "Operator assignment 'var op= expr'" do
+describe "Unconditional operator assignment 'var op= expr'" do
   it "is equivalent to 'var = var op expr'" do
     x = 13
     (x += 5).should == 18
@@ -488,7 +652,11 @@ describe "Operator assignment 'var op= expr'" do
     x = 5
     (x >>= 1).should == 2
     x.should == 2
+  end
+end
 
+describe "Conditional operator assignment 'var op= expr'" do
+  it "assigns the lhs if its truthiness is false for ||, true for &&" do
     x = nil
     (x ||= 17).should == 17
     x.should == 17
@@ -507,7 +675,17 @@ describe "Operator assignment 'var op= expr'" do
     x.should == false
   end
 
-  it "uses short-circuit arg evaluation for operators ||= and &&=" do
+  it "may not assign at all, depending on the truthiness of lhs" do
+    Object.new.instance_eval do
+      @falsey = false
+      @truthy = true
+      freeze
+      lambda{ @truthy ||= 42 }.should_not raise_error
+      lambda{ @falsey &&= 42 }.should_not raise_error
+    end
+  end
+
+  it "uses short-circuit arg evaluation" do
     x = 8
     y = VariablesSpecs::OpAsgn.new
     (x ||= y.do_side_effect).should == 8
@@ -523,7 +701,7 @@ describe "Operator assignment 'var op= expr'" do
   end
 end
 
-describe "Operator assignment 'obj.meth op= expr'" do
+describe "Unconditional operator assignment 'obj.meth op= expr'" do
   it "is equivalent to 'obj.meth = obj.meth op expr'" do
     @x = VariablesSpecs::OpAsgn.new
     @x.a = 13
@@ -578,9 +756,14 @@ describe "Operator assignment 'obj.meth op= expr'" do
     @x.a = 5
     (@x.a >>= 1).should == 2
     @x.a.should == 2
+  end
+end
 
+describe "Conditional operator assignment 'obj.meth op= expr'" do
+  it "is equivalent to 'obj.meth op obj.meth = expr'" do
+    @x = VariablesSpecs::OpAsgn.new
     @x.a = nil
-     (@x.a ||= 17).should == 17
+    (@x.a ||= 17).should == 17
     @x.a.should == 17
     (@x.a ||= 2).should == 17
     @x.a.should == 17
@@ -597,7 +780,18 @@ describe "Operator assignment 'obj.meth op= expr'" do
     @x.a.should == false
   end
 
-  it "uses short-circuit arg evaluation for operators ||= and &&=" do
+  it "may not assign at all, depending on the truthiness of lhs" do
+    m = mock("object")
+    m.should_receive(:foo).and_return(:truthy)
+    m.should_not_receive(:foo=)
+    m.foo ||= 42
+
+    m.should_receive(:bar).and_return(false)
+    m.should_not_receive(:bar=)
+    m.bar &&= 42
+  end
+
+  it "uses short-circuit arg evaluation" do
     x = 8
     y = VariablesSpecs::OpAsgn.new
     (x ||= y.do_side_effect).should == 8
@@ -611,7 +805,9 @@ describe "Operator assignment 'obj.meth op= expr'" do
     (x ||= y.do_side_effect).should == 5
     y.side_effect.should == true
   end
+end
 
+describe "Operator assignment 'obj.meth op= expr'" do
   it "evaluates lhs one time" do
     x = VariablesSpecs::OpAsgn.new
     x.a = 5
@@ -684,7 +880,7 @@ describe "Operator assignment 'obj.meth op= expr'" do
   end
 end
 
-describe "Operator assignment 'obj[idx] op= expr'" do
+describe "Unconditional operator assignment 'obj[idx] op= expr'" do
   it "is equivalent to 'obj[idx] = obj[idx] op expr'" do
     x = [2,13,7]
     (x[1] += 5).should == 18
@@ -738,7 +934,11 @@ describe "Operator assignment 'obj[idx] op= expr'" do
     x = [nil,5,8]
     (x[1] >>= 1).should == 2
     x.should == [nil,2,8]
+  end
+end
 
+describe "Conditional operator assignment 'obj[idx] op= expr'" do
+  it "is equivalent to 'obj[idx] op obj[idx] = expr'" do
     x = [1,nil,12]
     (x[1] ||= 17).should == 17
     x.should == [1,17,12]
@@ -756,7 +956,19 @@ describe "Operator assignment 'obj[idx] op= expr'" do
     x.should == [false, false, false]
   end
 
-  it "uses short-circuit arg evaluation for operators ||= and &&=" do
+  it "may not assign at all, depending on the truthiness of lhs" do
+    m = mock("object")
+    m.should_receive(:[]).and_return(:truthy)
+    m.should_not_receive(:[]=)
+    m[:foo] ||= 42
+
+    m = mock("object")
+    m.should_receive(:[]).and_return(false)
+    m.should_not_receive(:[]=)
+    m[:bar] &&= 42
+  end
+
+  it "uses short-circuit arg evaluation" do
     x = 8
     y = VariablesSpecs::OpAsgn.new
     (x ||= y.do_side_effect).should == 8
@@ -770,7 +982,9 @@ describe "Operator assignment 'obj[idx] op= expr'" do
     (x ||= y.do_side_effect).should == 5
     y.side_effect.should == true
   end
+end
 
+describe "Operator assignment 'obj[idx] op= expr'" do
   it "handles complex index (idx) arguments" do
     x = [1,2,3,4]
     (x[0,2] += [5]).should == [1,2,5]
@@ -1069,4 +1283,30 @@ describe "Scope of variables" do
     instance.check_each_block
   end
 end
+
+describe "A local variable in a #define_method scope" do
+  ruby_bug '#1322', '1.8.7.228' do
+    it "shares the lexical scope containing the call to #define_method" do
+      # We need a new scope to reproduce this bug.
+      handle = mock("handle for containing scope method")
+
+      def handle.produce_bug
+        local = 1
+
+        klass = Class.new
+        klass.send :define_method, :set_local do |arg|
+          lambda { local = 2 }.call
+        end
+
+        # We must call with at least one argument to reproduce the bug.
+        klass.new.set_local(nil)
+
+        local
+      end
+
+      handle.produce_bug.should == 2
+    end
+  end
+end
+
 language_version __FILE__, "variables"

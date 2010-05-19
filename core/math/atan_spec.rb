@@ -1,10 +1,10 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 # arctangent : (-Inf, Inf) --> (-PI/2, PI/2)
 describe "Math.atan" do     
   it "returns a float" do 
-    Math.atan(1).class.should == Float
+    Math.atan(1).should be_kind_of(Float)
   end 
   
   it "return the arctangent of the argument" do    

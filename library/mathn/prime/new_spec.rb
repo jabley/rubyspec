@@ -1,9 +1,9 @@
-require File.dirname(__FILE__) + '/../../../spec_helper'
+require File.expand_path('../../../../spec_helper', __FILE__)
 require 'mathn'
 
 describe "Prime.new" do
   it "returns a new Prime number" do
-    Prime.new.class.should == Prime
+    Prime.new.should be_kind_of(Prime)
   end
    
   it "raises a TypeError when is called with some arguments" do

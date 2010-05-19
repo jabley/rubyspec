@@ -1,18 +1,20 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/methods'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/methods', __FILE__)
 
 describe "Time.at" do
-  ruby_version_is ""..."1.9" do
-    it "converts to time object" do
-      # the #chomp calls are necessary because of RSpec
-      Time.at(1184027924).inspect.chomp.should == localtime_18(1184027924).chomp
+  platform_is_not :windows do
+    ruby_version_is ""..."1.9" do
+      it "converts to time object" do
+        # the #chomp calls are necessary because of RSpec
+        Time.at(1184027924).inspect.chomp.should == localtime_18(1184027924).chomp
+      end
     end
-  end
-  
-  ruby_version_is "1.9" do
-    it "converts to time object" do
-      # the #chomp calls are necessary because of RSpec
-      Time.at(1184027924).inspect.chomp.should == localtime_19(1184027924).chomp
+
+    ruby_version_is "1.9" do
+      it "converts to time object" do
+        # the #chomp calls are necessary because of RSpec
+        Time.at(1184027924).inspect.chomp.should == localtime_19(1184027924).chomp
+      end
     end
   end
 

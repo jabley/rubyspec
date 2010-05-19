@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Array#first" do
   it "returns the first element" do
@@ -70,11 +70,11 @@ describe "Array#first" do
   end
 
   it "does not return subclass instance when passed count on Array subclasses" do
-    ArraySpecs::MyArray[].first(0).class.should == Array
-    ArraySpecs::MyArray[].first(2).class.should == Array
-    ArraySpecs::MyArray[1, 2, 3].first(0).class.should == Array
-    ArraySpecs::MyArray[1, 2, 3].first(1).class.should == Array
-    ArraySpecs::MyArray[1, 2, 3].first(2).class.should == Array
+    ArraySpecs::MyArray[].first(0).should be_kind_of(Array)
+    ArraySpecs::MyArray[].first(2).should be_kind_of(Array)
+    ArraySpecs::MyArray[1, 2, 3].first(0).should be_kind_of(Array)
+    ArraySpecs::MyArray[1, 2, 3].first(1).should be_kind_of(Array)
+    ArraySpecs::MyArray[1, 2, 3].first(2).should be_kind_of(Array)
   end
 
   it "is not destructive" do

@@ -1,9 +1,9 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Math.exp" do
   it "returns a float" do
-    Math.exp(1.0).class.should == Float
+    Math.exp(1.0).should be_kind_of(Float)
   end
   
   it "returns the base-e exponential of the argument" do

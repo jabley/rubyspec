@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes.rb'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
 
 # TODO: Move actual results to String#to_int() and spec in terms of it
 describe "String#hex" do
@@ -18,6 +18,12 @@ describe "String#hex" do
       "a__b".hex.should == 0xab
       "a____b".hex.should == 0xab
       "a___f".hex.should == 0xaf
+    end
+
+    it "accepts a sequence of underscores in front of string as part of a number" do
+      "_a".hex.should == 0xa
+      "___b".hex.should == 0xb
+      "___0xc".hex.should == 0xc
     end
   end
   
@@ -49,5 +55,13 @@ describe "String#hex" do
     "+-5".hex.should == 0
     "wombat".hex.should == 0
     "0x0x42".hex.should == 0
+  end
+
+  ruby_version_is "1.9" do
+    it "returns 0 if sequence begins with underscore" do
+      "_a".hex.should == 0
+      "___b".hex.should == 0
+      "___0xc".hex.should == 0
+    end
   end
 end

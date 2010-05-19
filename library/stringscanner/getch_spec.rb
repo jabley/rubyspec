@@ -1,7 +1,16 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../shared/extract_range', __FILE__)
 require 'strscan'
 
 describe "StringScanner#getch" do
+  before :each do
+    @kcode = $KCODE
+  end
+
+  after :each do
+    $KCODE = @kcode
+  end
+
   it "scans one character and returns it" do
     s = StringScanner.new('abc')
     s.getch.should == "a"
@@ -10,13 +19,13 @@ describe "StringScanner#getch" do
   end
 
   it "is multi-byte character sensitive" do
-    begin
-        old, $KCODE = $KCODE, 'EUC'
-        s = StringScanner.new("\244\242")
-        s.getch.should == "\244\242" # Japanese hira-kana "A" in EUC-JP
-    ensure
-      $KCODE = old
-    end
+    $KCODE = 'EUC'
+
+    # Japanese hiragana "A" in EUC-JP
+    src = encode("\244\242", "euc-jp")
+
+    s = StringScanner.new(src)
+    s.getch.should == src
   end
 
   it "returns nil at the end of the string" do
@@ -31,11 +40,5 @@ describe "StringScanner#getch" do
     s.getch.should == nil
   end
 
-  it "does not accept any arguments" do
-    s = StringScanner.new('abc')
-    lambda {
-      s.getch(5)
-    }.should raise_error(ArgumentError, /wrong .* arguments/)
-  end
-
+  it_behaves_like :extract_range, :getch
 end

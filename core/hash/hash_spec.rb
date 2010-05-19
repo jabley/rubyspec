@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Hash" do
   it "includes Enumerable" do
@@ -27,12 +27,17 @@ describe "Hash#hash" do
       h = {} ; h[:x] = h
       h.hash.should == {:x => h}.hash
       h.hash.should == {:x => {:x => h}}.hash
+      # This is because h.eql?(:x => h)
+      # Remember that if two objects are eql?
+      # then the need to have the same hash.
+      # Check the Hash#eql? specs!
     end
 
     it "returns the same hash for recursive hashes through arrays" do
       h = {} ; rec = [h] ; h[:x] = rec
       h.hash.should == {:x => rec}.hash
       h.hash.should == {:x => [h]}.hash
+      # Like above, because h.eql?(:x => [h])
     end
   end
 

@@ -1,9 +1,9 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Struct[]" do
   it "is a synonym for new" do
-    Struct::Ruby['2.0', 'i686'].class.should == Struct::Ruby
+    Struct::Ruby['2.0', 'i686'].should be_kind_of(Struct::Ruby)
   end
 end
 

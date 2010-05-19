@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Module::Nesting" do
 
@@ -24,4 +24,8 @@ describe "Module::Nesting" do
       [ModuleSpecs::Nesting::NestedClass, ModuleSpecs::Nesting, ModuleSpecs]
   end
 
+end
+
+describe "Module.nesting" do
+  it "needs to be reviewed for spec completeness"
 end

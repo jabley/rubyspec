@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 class DefineMethodSpecClass
 end
@@ -55,6 +55,14 @@ describe "Module#define_method" do
     o.test1.should == o.another_test
   end
 
+  it "calls #method_added after the method is added to the Module" do
+    DefineMethodSpecClass.should_receive(:method_added).with(:test_ma)
+
+    class DefineMethodSpecClass
+      define_method(:test_ma) { true }
+    end
+  end
+
   it "defines a new method with the given name and the given block as body in self" do
     class DefineMethodSpecClass
       define_method(:block_test1) { self }
@@ -95,7 +103,7 @@ describe "Module#define_method" do
     lambda{o.other_inspect}.should raise_error(NoMethodError)
   end
 
-  it "should maintain the Proc's scope" do
+  it "maintains the Proc's scope" do
     class DefineMethodByProcClass
       in_scope = true
       method_proc = proc { in_scope }
@@ -104,6 +112,20 @@ describe "Module#define_method" do
     end
 
     o = DefineMethodByProcClass.new
-    o.proc_test.should == true
+    o.proc_test.should be_true
+  end
+
+  it "accepts a String method name" do
+    klass = Class.new do
+      define_method("string_test") do
+        "string_test result"
+      end
+    end
+
+    klass.new.string_test.should == "string_test result"
+  end
+
+  it "is private" do
+    Module.should have_private_instance_method(:define_method)
   end
 end

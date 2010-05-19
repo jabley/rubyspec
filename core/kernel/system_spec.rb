@@ -1,7 +1,10 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Kernel#system" do
+  before do
+    @ruby = MSpecScript.config[:target]
+  end
 
   it "can run basic things that exist" do
     begin
@@ -58,17 +61,25 @@ describe "Kernel#system" do
 
   before :each do
     ENV['TEST_SH_EXPANSION'] = 'foo'
-    @shell_var = platform_is(:windows) ? '%TEST_SH_EXPANSION%' : '$TEST_SH_EXPANSION'
+    @shell_var = '$TEST_SH_EXPANSION'
+    platform_is :windows do
+      @shell_var = '%TEST_SH_EXPANSION%'
+    end
+
     @helper_script = KernelSpecs.helper_script
   end
 
   it "expands shell variables when given a single string argument" do
-    result = system("ruby #{@helper_script} #{@shell_var} foo")
+    result = system("#{@ruby} #{@helper_script} #{@shell_var} foo")
     result.should be_true
   end
   
   it "does not expand shell variables when given multiples arguments" do
-    result = system("ruby", @helper_script, @shell_var, "foo")
+    result = system("#{@ruby}", @helper_script, @shell_var, "foo")
     result.should be_false
   end
+end
+
+describe "Kernel.system" do
+  it "needs to be reviewed for spec completeness"
 end

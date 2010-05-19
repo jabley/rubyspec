@@ -1,6 +1,6 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
-require File.dirname(__FILE__) + '/shared/send'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
+require File.expand_path('../shared/send', __FILE__)
 
 ruby_version_is "1.9" do
   describe "Kernel#public_send" do
@@ -40,8 +40,9 @@ ruby_version_is "1.9" do
           'done2'
         end
       end
-      lambda { KernelSpecs::Foo.new.public_send(:bar) }.should 
-        raise_error(NoMethodError)
+      lambda {
+        KernelSpecs::Foo.new.public_send(:bar)
+      }.should raise_error(NoMethodError)
     end
 
     it "raises a NoMethodError if the named method is an alias of a private method" do
@@ -52,8 +53,9 @@ ruby_version_is "1.9" do
           'done2'
         end
       end
-      lambda { KernelSpecs::Foo.new.public_send(:aka) }.should 
-        raise_error(NoMethodError)
+      lambda {
+        KernelSpecs::Foo.new.public_send(:aka)
+      }.should raise_error(NoMethodError)
     end
 
     it "raises a NoMethodError if the named method is an alias of a protected method" do
@@ -64,8 +66,9 @@ ruby_version_is "1.9" do
           'done2'
         end
       end
-      lambda { KernelSpecs::Foo.new.public_send(:aka) }.should 
-        raise_error(NoMethodError)
+      lambda {
+        KernelSpecs::Foo.new.public_send(:aka)
+      }.should raise_error(NoMethodError)
     end
 
   it_behaves_like(:kernel_send, :public_send)

@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Hash#to_a" do
   it "returns a list of [key, value] pairs with same order as each()" do
@@ -10,7 +10,7 @@ describe "Hash#to_a" do
       pairs << [key, value]
     end
 
-    h.to_a.class.should == Array
+    h.to_a.should be_kind_of(Array)
     h.to_a.should == pairs
   end
 end

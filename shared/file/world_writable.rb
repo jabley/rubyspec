@@ -1,10 +1,10 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe :file_world_writable, :shared => true do
 
   before(:each) do
     @file = tmp('world-writable')
-    File.open(@file,'w') {|f| f.puts }
+    touch @file
   end
 
   after(:each) do

@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Module#class_variable_set" do
   it "sets the class variable with the given name to the given value" do
@@ -13,7 +13,7 @@ describe "Module#class_variable_set" do
   end
 
   it "sets the value of a class variable with the given name defined in an included module" do
-    c = Class.new { include ModuleSpecs::MVars }
+    c = Class.new { include ModuleSpecs::MVars.dup }
     c.send(:class_variable_set, "@@mvar", :new_mvar).should == :new_mvar
     c.send(:class_variable_get, "@@mvar").should == :new_mvar
   end

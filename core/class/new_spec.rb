@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Class.new with a block given" do
   it "uses the given block as the class' body" do
@@ -87,4 +87,8 @@ describe "Class.new" do
     lambda { Class.new(mock('o'))  }.should raise_error(TypeError)
     lambda { Class.new(Module.new) }.should raise_error(TypeError)
   end
+end
+
+describe "Class#new" do
+  it "needs to be reviewed for spec completeness"
 end

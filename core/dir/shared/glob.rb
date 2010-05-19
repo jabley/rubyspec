@@ -17,6 +17,7 @@ describe :dir_glob, :shared => true do
 
   it "matches non-dotfiles with '*'" do
     expected = %w[
+      brace
       deeply
       dir
       dir_filename_ordering
@@ -111,6 +112,7 @@ describe :dir_glob, :shared => true do
 
   it "matches non-dotfiles in the current directory with '**'" do
     expected = %w[
+      brace
       deeply
       dir
       dir_filename_ordering
@@ -131,6 +133,7 @@ describe :dir_glob, :shared => true do
 
   it "recursively matches any nondot subdirectories with '**/'" do
     expected = %w[
+      brace/
       deeply/
       deeply/nested/
       deeply/nested/directory/
@@ -188,6 +191,11 @@ describe :dir_glob, :shared => true do
     Dir.send(@method, '{,.}*').sort.should == DirSpecs.expected_paths
   end
 
+  it "respects the order of {} expressions, expanding left most first" do
+    files = Dir.send(@method, "brace/a{.js,.html}{.erb,.rjs}")
+    files.should == %w!brace/a.js.rjs brace/a.html.erb!
+  end
+
   it "matches special characters by escaping with a backslash with '\\<character>'" do
     Dir.mkdir 'foo^bar'
 
@@ -230,8 +238,8 @@ describe :dir_glob_recursive, :shared => true do
       a/x/b/y/b/z/e
     ].each do |path|
       file = File.join @mock_dir, path
-      FileUtils.mkdir_p File.dirname(file)
-      FileUtils.touch file
+      mkdir_p File.dirname(file)
+      touch file
     end
 
     Dir.chdir @mock_dir
@@ -239,7 +247,7 @@ describe :dir_glob_recursive, :shared => true do
 
   after(:all) do
     Dir.chdir @cwd
-    FileUtils.rm_r @mock_dir
+    rm_r @mock_dir
   end
 
   it "matches multiple recursives" do

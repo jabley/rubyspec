@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Float#<=>" do
   before(:all) do
@@ -38,7 +38,7 @@ describe "Float#<=>" do
     end
   end
 
-  ruby_bug "[ruby-dev:38672] [Bug #1645]", "1.8.7.174" do
+  ruby_bug "[ruby-dev:38672] [Bug #1645]", "1.8.7.248" do
     # The 4 tests below are taken from matz's revision 23730 for Ruby trunk
     #
     it "returns 1 when self is Infinity and other is a Bignum" do

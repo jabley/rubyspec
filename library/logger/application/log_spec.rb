@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../../spec_helper'
-require File.dirname(__FILE__) + '/../fixtures/common'
+require File.expand_path('../../../../spec_helper', __FILE__)
+require File.expand_path('../../fixtures/common', __FILE__)
 
 describe "Logger::Application#log" do
   before :each do
@@ -60,6 +60,7 @@ describe "Logger::Application#log=" do
   end
 
   after :all do
+    @log_file.close
     File.unlink(@file_path) if File.exists?(@file_path)
   end
 

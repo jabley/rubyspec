@@ -1,10 +1,10 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/common'
-require File.dirname(__FILE__) + '/fixtures/strings'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/common', __FILE__)
+require File.expand_path('../fixtures/strings', __FILE__)
 
 describe "YAML.load" do
   after :each do
-    File.delete $test_file if File.exist? $test_file
+    rm_r $test_file
   end
   
   it "returns a document from current io stream when io provided" do

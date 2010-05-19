@@ -1,9 +1,9 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 require 'set'
 
 describe "Set#initialize" do
   it "is private" do
-    Set[].private_methods.should include("initialize")
+    Set.should have_private_instance_method(:initialize)
   end
   
   it "adds all elements of the passed Enumerable to self" do

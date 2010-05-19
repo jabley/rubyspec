@@ -1,10 +1,10 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 require 'matrix'
 
 describe "Matrix#new" do
   
-  it "returns a Matrix" do
-    lambda { Matrix.new }.should raise_error
+  it "is not accessible" do
+    lambda { Matrix.new }.should raise_error(NoMethodError)
   end
   
 end

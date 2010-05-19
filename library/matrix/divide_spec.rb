@@ -1,4 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../spec_helper', __FILE__)
 require 'matrix'
 
 describe "Matrix#/" do
@@ -8,10 +9,9 @@ describe "Matrix#/" do
     @c = Matrix[ [1.2, 2.4], [3.6, 4.8] ]
   end
 
-  conflicts_with :Prime do
+  ruby_bug "?", "1.8.7" do
     it "returns the result of dividing self by another Matrix" do
-      (@a / @b).should == Matrix[ [-2, 0], [-4, 0] ]
-      ((@a / @b) / @b).should == Matrix[ [0,0], [0,0] ]
+      (@a / @b).should be_close_to_matrix([[2.5, -1.5], [1.5, -0.5]])
     end
   end
 
@@ -37,5 +37,14 @@ describe "Matrix#/" do
 
   it "returns an instance of Matrix" do
     (@a /@b).should be_kind_of(Matrix)
+  end
+
+  ruby_bug "redmine:2365", "1.8.7" do
+    it "raises a TypeError if other is of wrong type" do
+      lambda { @a / nil        }.should raise_error(TypeError)
+      lambda { @a / "a"        }.should raise_error(TypeError)
+      lambda { @a / [ [1, 2] ] }.should raise_error(TypeError)
+      lambda { @a / Object.new }.should raise_error(TypeError)
+    end
   end
 end

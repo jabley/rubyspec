@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../../spec_helper'
+require File.expand_path('../../../../spec_helper', __FILE__)
 require 'rexml/document'
 
 describe "REXML::Text#write_with_substitution" do
@@ -10,7 +10,7 @@ describe "REXML::Text#write_with_substitution" do
 
   after :each do
     @file.close
-    File.delete(@f) if File.exists?(@f)
+    rm_r @f
   end
 
   it "writes out the input to a String" do

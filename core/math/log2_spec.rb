@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 extended_on :rubinius do
   describe "Math.log2" do
@@ -27,5 +27,11 @@ extended_on :rubinius do
     it "accepts any argument that can be coerced with Float()" do
       Math.log2(MathSpecs::Float.new).should be_close(0.0, TOLERANCE)
     end
+  end
+end
+
+ruby_version_is "1.9" do
+  describe "Math.log2" do
+    it "needs to be reviewed for spec completeness"
   end
 end

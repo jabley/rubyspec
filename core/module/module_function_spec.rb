@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Module#module_function with specific method names" do
   it "creates duplicates of the given instance methods on the Module object" do
@@ -98,6 +98,13 @@ describe "Module#module_function with specific method names" do
 
     o.should_receive(:to_str).and_return(123)
     lambda { Module.new { module_function(o) } }.should raise_error(TypeError)
+  end
+
+  it "can make accessible private methods" do # JRUBY-4214
+    m = Module.new do
+      module_function :require
+    end
+    m.respond_to?(:require).should be_true 
   end
 end
 

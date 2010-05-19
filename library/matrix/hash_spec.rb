@@ -1,10 +1,6 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 require 'matrix'
 
-# Note: Matrix just computes a bitwise OR of the element's .hash values, so
-# their position in the matrix isn't taken into account. This means that
-# matrices with the same elements in different positions will generate the
-# same .hash code...
 describe "Matrix#hash" do
   
   it "returns a Fixnum" do

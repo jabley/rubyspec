@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/../../shared/file/setgid'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../../../shared/file/setgid', __FILE__)
  
 describe "File.setgid?" do
   it_behaves_like :file_setgid, :setgid?, File
@@ -7,12 +7,12 @@ end
  
 describe "File.setgid?" do
   before(:each) do
-    @name = 'test.txt'
-    @file = File.new(@name, "w")
+    @name = tmp('test.txt')
+    touch @name
   end
   
   after(:each) do
-    File.delete(@name) if File.exists?(@name)
+    rm_r @name
   end
   
   it "should return false if the file was just made" do
@@ -20,7 +20,7 @@ describe "File.setgid?" do
   end
   
   it "should be false if the file doesn't exist" do
-    File.delete(@name) # delete it prematurely, just for this part
+    rm_r @name # delete it prematurely, just for this part
     File.setgid?(@name).should == false
   end
   

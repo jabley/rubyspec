@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Struct#select" do
   it "raises an ArgumentError if given any non-block arguments" do
@@ -13,6 +13,6 @@ describe "Struct#select" do
   
   it "returns an instance of Array" do
     struct = Struct::Car.new("Ford", "Escort", "1995")
-    struct.select { true }.class.should == Array
+    struct.select { true }.should be_kind_of(Array)
   end
 end

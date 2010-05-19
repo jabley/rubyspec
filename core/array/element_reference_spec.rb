@@ -1,6 +1,6 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
-require File.dirname(__FILE__) + '/shared/slice'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
+require File.expand_path('../shared/slice', __FILE__)
 
 describe "Array#[]" do
   it_behaves_like(:array_slice, :[])
@@ -39,6 +39,6 @@ describe "Array.[]" do
   
   it "returns an instance of the subtype when called on an Array subclass" do
     ArraySub = Class.new Array
-    ArraySub[1,2].class.should == ArraySub
+    ArraySub[1,2].should be_kind_of(ArraySub)
   end
 end

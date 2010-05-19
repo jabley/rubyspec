@@ -1,9 +1,9 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Math.sqrt" do
   it "returns a float" do
-    Math.sqrt(1).class.should == Float
+    Math.sqrt(1).should be_kind_of(Float)
   end
   
   it "returns the square root of the argument" do

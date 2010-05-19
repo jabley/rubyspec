@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Process.groups" do
   platform_is_not :windows do
@@ -31,4 +31,8 @@ describe "Process.groups" do
       end
     end
   end
+end
+
+describe "Process.groups=" do
+  it "needs to be reviewed for spec completeness"
 end

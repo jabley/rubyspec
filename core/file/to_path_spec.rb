@@ -1,33 +1,48 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 ruby_version_is "1.9" do
   describe "File#to_path" do
-    
-    it "returns a String" do
-      File.new(__FILE__).to_path.should be_an_instance_of(String)
+    before :each do
+      @name = "file_to_path"
+      @path = encode tmp(@name), "euc-jp"
+      touch @path
     end
 
-    it "doesn't normalise the path it returns" do
-      Dir.chdir(File.dirname(__FILE__)) do
-        unorm ='./' + File.basename(__FILE__)
-        File.new(unorm).to_path.should == unorm
+    after :each do
+      @file.close if @file and !@file.closed?
+      rm_r @path
+    end
+
+    it "returns a String" do
+      @file = File.new @path
+      @file.to_path.should be_an_instance_of(String)
+    end
+
+    it "does not normalise the path it returns" do
+      Dir.chdir(tmp("")) do
+        unorm = "./#{@name}"
+        @file = File.new unorm
+        @file.to_path.should == unorm
       end
     end
 
-    it "doesn't expand the path it returns" do
-      File.new('../').to_path.should == '../'
+    it "does not canonicalize the path it returns" do
+      dir = File.basename tmp("")
+      path = "#{tmp("")}../#{dir}/#{@name}"
+      @file = File.new path
+      @file.to_path.should == path
     end
 
-    it "doesn't absolute-ise the path it returns" do
-      Dir.chdir(File.dirname(__FILE__)) do
-        rel_path = File.basename(__FILE__)
-        File.new(rel_path).to_path.should == rel_path
+    it "does not absolute-ise the path it returns" do
+      Dir.chdir(tmp("")) do
+        @file = File.new @name
+        @file.to_path.should == @name
       end
     end
 
     it "preserves the encoding of the path" do
-      path = File.new(__FILE__.encode('euc-jp')).to_path
-      path.encoding.should == Encoding::EUC_JP
+      @file = File.new @path
+      @file.to_path.encoding.should == Encoding.find("euc-jp")
     end
   end
 end

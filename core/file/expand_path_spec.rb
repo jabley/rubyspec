@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "File.expand_path" do
   before :each do
@@ -41,10 +41,19 @@ describe "File.expand_path" do
 
   # FIXME: do not use conditionals like this around #it blocks
   unless not home = ENV['HOME']
-    it "converts a pathname to an absolute pathname, using ~ (home) as base" do
-      File.expand_path('~').should == home
-      File.expand_path('~', '/tmp/gumby/ddd').should == home
-      File.expand_path('~/a', '/tmp/gumby/ddd').should == File.join(home, 'a')
+    platform_is_not :windows do
+      it "converts a pathname to an absolute pathname, using ~ (home) as base" do
+        File.expand_path('~').should == home
+        File.expand_path('~', '/tmp/gumby/ddd').should == home
+        File.expand_path('~/a', '/tmp/gumby/ddd').should == File.join(home, 'a')
+      end
+    end
+    platform_is :windows do
+      it "converts a pathname to an absolute pathname, using ~ (home) as base" do
+        File.expand_path('~').should == home.tr("\\", '/')
+        File.expand_path('~', '/tmp/gumby/ddd').should == home.tr("\\", '/')
+        File.expand_path('~/a', '/tmp/gumby/ddd').should == File.join(home.tr("\\", '/'), 'a')
+      end
     end
   end
 
@@ -54,7 +63,8 @@ describe "File.expand_path" do
       File.expand_path("../../bin", "/tmp/x").should == "/bin"
       File.expand_path("../../bin", "/tmp").should == "/bin"
       File.expand_path("../../bin", "/").should == "/bin"
-      File.expand_path("../../bin", "tmp/x").should == File.join(@base, 'bin')
+      File.expand_path("../bin", "tmp/x").should == File.join(@base, 'tmp', 'bin')
+      File.expand_path("../bin", "x/../tmp").should == File.join(@base, 'bin')
     end
 
     it "expand_path for commoms unix path  give a full path" do
@@ -70,11 +80,20 @@ describe "File.expand_path" do
       File.expand_path('~/a','~/b').should == "#{ENV['HOME']}/a"
     end
 
-    not_compliant_on :macruby do
-      it "leaves multiple prefixed slashes untouched" do
-        File.expand_path('//').should == '//'
-        File.expand_path('////').should == '////'
+    not_compliant_on :rubinius, :macruby do
+      it "does not replace multiple '/' at the beginning of the path" do
+        File.expand_path('////some/path').should == "////some/path"
       end
+    end
+
+    deviates_on :rubinius, :macruby do
+      it "replaces multiple '/' with a single '/' at the beginning of the path" do
+        File.expand_path('////some/path').should == "/some/path"
+      end
+    end
+
+    it "replaces multiple '/' with a single '/'" do
+      File.expand_path('/some////path').should == "/some/path"
     end
 
     it "raises an ArgumentError if the path is not valid" do
@@ -84,6 +103,10 @@ describe "File.expand_path" do
     it "expands ~ENV['USER'] to the user's home directory" do
       File.expand_path("~#{ENV['USER']}").should == ENV['HOME']
       File.expand_path("~#{ENV['USER']}/a").should == "#{ENV['HOME']}/a"
+    end
+
+    it "does not expand ~ENV['USER'] when it's not at the start" do
+      File.expand_path("/~#{ENV['USER']}/a").should == "/~#{ENV['USER']}/a"
     end
 
     it "expands ../foo with ~/dir as base dir to /path/to/user/home/foo" do
@@ -108,8 +131,16 @@ describe "File.expand_path" do
     lambda { File.expand_path(true) }.should raise_error(TypeError)
   end
 
-  it "expands /./dir to /dir" do
-    File.expand_path("/./dir").should == "/dir"
+  platform_is_not :windows do
+    it "expands /./dir to /dir" do
+      File.expand_path("/./dir").should == "/dir"
+    end
+  end
+
+  platform_is :windows do
+    it "expands C:/./dir to C:/dir" do
+      File.expand_path("C:/./dir").should == "C:/dir"
+    end
   end
 
   ruby_version_is "1.9" do
@@ -117,7 +148,6 @@ describe "File.expand_path" do
       old_external = Encoding.default_external
       Encoding.default_external = Encoding::SHIFT_JIS
       File.expand_path("./a").encoding.should == Encoding::SHIFT_JIS
-      File.expand_path("./\u{9876}").encoding.should == Encoding::SHIFT_JIS
       Encoding.default_external = old_external
     end
   end

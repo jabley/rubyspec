@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Array#last" do
   it "returns the last element" do
@@ -68,11 +68,11 @@ describe "Array#last" do
   end
 
   it "does not return subclass instance on Array subclasses" do
-    ArraySpecs::MyArray[].last(0).class.should == Array
-    ArraySpecs::MyArray[].last(2).class.should == Array
-    ArraySpecs::MyArray[1, 2, 3].last(0).class.should == Array
-    ArraySpecs::MyArray[1, 2, 3].last(1).class.should == Array
-    ArraySpecs::MyArray[1, 2, 3].last(2).class.should == Array
+    ArraySpecs::MyArray[].last(0).should be_kind_of(Array)
+    ArraySpecs::MyArray[].last(2).should be_kind_of(Array)
+    ArraySpecs::MyArray[1, 2, 3].last(0).should be_kind_of(Array)
+    ArraySpecs::MyArray[1, 2, 3].last(1).should be_kind_of(Array)
+    ArraySpecs::MyArray[1, 2, 3].last(2).should be_kind_of(Array)
   end
 
   it "is not destructive" do

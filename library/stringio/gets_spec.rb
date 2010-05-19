@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 require "stringio"
 
 describe "StringIO#gets when passed [separator]" do
@@ -37,10 +37,12 @@ describe "StringIO#gets when passed [separator]" do
     @io.lineno.should eql(3)
   end
   
-  it "returns the next paragraph when the passed separator is an empty String" do
-    io = StringIO.new("this is\n\nan example")
-    io.gets("").should == "this is\n"
-    io.gets("").should == "an example"
+  ruby_bug "", "1.8.8" do
+    it "returns the next paragraph when the passed separator is an empty String" do
+      io = StringIO.new("this is\n\nan example")
+      io.gets("").should == "this is\n\n"
+      io.gets("").should == "an example"
+    end
   end
   
   it "returns the remaining content starting at the current position when passed nil" do

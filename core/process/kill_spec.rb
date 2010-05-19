@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 # if run indirectly (eg via CI), kills the runner. TODO: needs guard
 describe "Process.kill" do
@@ -21,6 +21,18 @@ describe "Process.kill" do
   end
 
   platform_is_not :windows do
+    it "accepts symbols as signal names" do
+      begin
+        flag = false
+        @saved_trap = Signal.trap("HUP") { flag = true }
+        Process.kill(:HUP, Process.pid).should == 1
+        sleep 0.5
+        flag.should == true
+      ensure
+        Signal.trap("HUP", @saved_trap)
+      end
+    end
+
     it "tests for the existence of a process without sending a signal" do
       Process.kill(0, 0).should == 1
       pid = Process.fork {
@@ -42,8 +54,8 @@ describe "Process.kill" do
     end
   end
 
-  it "raises an EPERM if permission is denied" do
-    if Process.uid != 0
+  if Process.uid != 0
+    it "raises an EPERM if permission is denied" do
       lambda { Process.kill(1, 1) }.should raise_error(Errno::EPERM)
     end
   end

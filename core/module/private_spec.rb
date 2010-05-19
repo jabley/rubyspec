@@ -1,8 +1,8 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Module#private" do
-  it "should make the target method uncallable from other types" do
+  it "makes the target method uncallable from other types" do
     obj = Object.new
     class << obj
       def foo; true; end

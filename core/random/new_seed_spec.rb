@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 ruby_version_is "1.9" do
   describe "Random.new_seed" do
@@ -10,14 +10,6 @@ ruby_version_is "1.9" do
     it "returns an arbitrary seed value each time" do
       bigs = 200.times.map { Random.new_seed }
       bigs.uniq.size.should == 200  
-    end
-
-    # This is probably implementation-specific, but given the complexity and
-    # importance of random number generation, it seems prudent to be explcit
-    # about the current behaviour.
-    it "returns a number less than 40 digits long" do
-      bigs = 2000.times.map { Random.new_seed.to_s.length }.uniq
-      bigs.max.should < 40
     end
 
     it "is not affected by Kernel#srand" do

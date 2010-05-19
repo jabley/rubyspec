@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Array#shift" do
   it "removes and returns the first element" do
@@ -66,6 +66,14 @@ describe "Array#shift" do
         a.should == []
       end
 
+      it "does not corrupt the array when shift without arguments is followed by shift with an argument" do
+        a = [1, 2, 3, 4, 5]
+
+        a.shift.should == 1
+        a.shift(3).should == [2, 3, 4]
+        a.should == [5]
+      end
+
       it "returns a new empty array if there are no more elements" do
         a = []
         popped1 = a.shift(1)
@@ -118,7 +126,7 @@ describe "Array#shift" do
       end
 
       it "does not return subclass instances with Array subclass" do
-        ArraySpecs::MyArray[1, 2, 3].shift(2).class.should == Array
+        ArraySpecs::MyArray[1, 2, 3].shift(2).should be_kind_of(Array)
       end
 
       it "returns an untainted array even if the array is tainted" do

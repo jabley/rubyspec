@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../../spec_helper'
-require File.dirname(__FILE__) + '/../fixtures/classes'
+require File.expand_path('../../../../spec_helper', __FILE__)
+require File.expand_path('../../fixtures/classes', __FILE__)
 
 platform_is_not :windows do
   describe "UNIXServer#accept" do
@@ -38,12 +38,13 @@ platform_is_not :windows do
       # kill thread, ensure it dies in a reasonable amount of time
       t.kill
       a = 1
-      while a < 1000
+      while a < 2000
         break unless t.alive?
         Thread.pass
+        sleep 0.2
         a += 1
       end
-      a.should < 1000
+      a.should < 2000
       server.close
     end
 

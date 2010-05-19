@@ -1,11 +1,11 @@
-require File.dirname(__FILE__) + '/../../../../spec_helper'
+require File.expand_path('../../../../../spec_helper', __FILE__)
 require 'openssl'
 
 describe :openssl_random_bytes, :shared => true do |cmd|
   it "generates a random binary string of specified length" do
     (1..64).each do |idx|
       bytes = OpenSSL::Random.pseudo_bytes(idx)
-      bytes.class.should == String
+      bytes.should be_kind_of(String)
       bytes.length.should == idx
     end
   end

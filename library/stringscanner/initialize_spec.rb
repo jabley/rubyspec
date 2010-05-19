@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 require 'strscan'
 
 describe "StringScanner#initialize" do
@@ -7,7 +7,7 @@ describe "StringScanner#initialize" do
   end
 
   it "is a private method" do
-    @s.private_methods.should include("initialize")
+    StringScanner.should have_private_instance_method(:initialize)
   end
 
   it "returns an instance of StringScanner" do

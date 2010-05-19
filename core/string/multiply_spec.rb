@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes.rb'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
 
 describe "String#*" do
   it "returns a new string containing count copies of self" do
@@ -28,9 +28,9 @@ describe "String#*" do
   end
   
   it "returns subclass instances" do
-    (StringSpecs::MyString.new("cool") * 0).class.should == StringSpecs::MyString
-    (StringSpecs::MyString.new("cool") * 1).class.should == StringSpecs::MyString
-    (StringSpecs::MyString.new("cool") * 2).class.should == StringSpecs::MyString
+    (StringSpecs::MyString.new("cool") * 0).should be_kind_of(StringSpecs::MyString)
+    (StringSpecs::MyString.new("cool") * 1).should be_kind_of(StringSpecs::MyString)
+    (StringSpecs::MyString.new("cool") * 2).should be_kind_of(StringSpecs::MyString)
   end
   
   it "always taints the result when self is tainted" do

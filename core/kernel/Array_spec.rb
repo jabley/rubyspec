@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Kernel#Array" do
   it "is a private method" do
@@ -48,4 +48,8 @@ describe "Kernel#Array" do
     obj.should_receive(:to_ary).and_return("ha!")
     lambda { Array(obj) }.should raise_error(TypeError)
   end
+end
+
+describe "Kernel.Array" do
+  it "needs to be reviewed for spec completeness"
 end

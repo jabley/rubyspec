@@ -1,6 +1,6 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
-require File.dirname(__FILE__) + '/../../shared/kernel/raise'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
+require File.expand_path('../../../shared/kernel/raise', __FILE__)
 
 describe "Thread#raise" do
   it "ignores dead threads" do
@@ -31,13 +31,13 @@ describe "Thread#raise on a sleeping thread" do
   it "raises the given exception" do
     @thr.raise Exception
     Thread.pass while @thr.status
-    ScratchPad.recorded.class.should == Exception
+    ScratchPad.recorded.should be_kind_of(Exception)
   end
 
   it "raises the given exception with the given message" do
     @thr.raise Exception, "get to work"
     Thread.pass while @thr.status
-    ScratchPad.recorded.class.should == Exception
+    ScratchPad.recorded.should be_kind_of(Exception)
     ScratchPad.recorded.message.should == "get to work"
   end
 
@@ -91,13 +91,13 @@ describe "Thread#raise on a running thread" do
   it "raises the given exception" do
     @thr.raise Exception
     Thread.pass while @thr.status
-    ScratchPad.recorded.class.should == Exception
+    ScratchPad.recorded.should be_kind_of(Exception)
   end
 
   it "raises the given exception with the given message" do
     @thr.raise Exception, "get to work"
     Thread.pass while @thr.status
-    ScratchPad.recorded.class.should == Exception
+    ScratchPad.recorded.should be_kind_of(Exception)
     ScratchPad.recorded.message.should == "get to work"
   end
 

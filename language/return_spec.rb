@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/return'
+require File.expand_path('../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/return', __FILE__)
 
 describe "The return keyword" do
   it "returns any object directly" do
@@ -261,6 +261,16 @@ describe "The return keyword" do
         1.times { 1.times {return true}; false}; false
       end
       f.should be_true
+    end
+  end
+
+  describe "within define_method" do
+    it "goes through the method via a closure" do
+      ReturnSpecs::ThroughDefineMethod.new.outer.should == :good
+    end
+
+    it "stops at the method when the return is used directly" do
+      ReturnSpecs::DefineMethod.new.outer.should == :good
     end
   end
 end

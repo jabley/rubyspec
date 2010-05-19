@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Array#<=>" do
   it "calls <=> left to right and return first non-0 result" do
@@ -91,5 +91,11 @@ describe "Array#<=>" do
     obj = ArraySpecs::ToAryArray[5, 6, 7]
     obj.should_not_receive(:to_ary)
     ([5, 6, 7] <=> obj).should == 0
+  end
+
+  ruby_bug "redmine:2276", "1.9.1" do
+    it "returns nil when the argument is not array-like" do
+      ([] <=> false).should be_nil
+    end
   end
 end

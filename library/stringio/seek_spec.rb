@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "StringIO#seek" do
   before(:each) do
@@ -34,6 +34,13 @@ describe "StringIO#seek" do
   
   it "raises an Errno::EINVAL error on negative amounts when whence is IO::SEEK_SET" do
     lambda { @io.seek(-5, IO::SEEK_SET) }.should raise_error(Errno::EINVAL)
+  end
+
+  it "raises an Errno::EINVAL error on incorrect whence argument" do
+    lambda { @io.seek(0, 3) }.should raise_error(Errno::EINVAL)
+    lambda { @io.seek(0, -1) }.should raise_error(Errno::EINVAL)
+    lambda { @io.seek(0, 2**16) }.should raise_error(Errno::EINVAL)
+    lambda { @io.seek(0, -2**16) }.should raise_error(Errno::EINVAL)
   end
 
   it "tries to convert the passed Object to a String using #to_int" do

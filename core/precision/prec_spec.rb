@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 ruby_version_is ""..."1.9.1" do
   describe "Float#prec" do
@@ -20,4 +20,8 @@ ruby_version_is ""..."1.9.1" do
       1.prec(Float).should == 1.0
     end
   end
+end
+
+describe "Precision#prec" do
+  it "needs to be reviewed for spec completeness"
 end

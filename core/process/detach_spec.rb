@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Process#detach" do
   platform_is_not :windows do
@@ -8,7 +8,7 @@ describe "Process#detach" do
 
     it "returns a thread" do
       p1 = Process.fork { Process.exit! }
-      Process.detach(p1).class.should == Thread
+      Process.detach(p1).should be_kind_of(Thread)
     end
 
     platform_is_not :openbsd do
@@ -25,4 +25,8 @@ describe "Process#detach" do
       end
     end
   end
+end
+
+describe "Process.detach" do
+  it "needs to be reviewed for spec completeness"
 end

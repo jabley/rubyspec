@@ -1,5 +1,6 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
+require File.expand_path('../shared/enumeratorize', __FILE__)
 
 describe "Array#reject" do
   it "returns a new array without elements for which block is true" do
@@ -22,29 +23,19 @@ describe "Array#reject" do
     array.reject { true }.should == []
   end
 
-  not_compliant_on :rubinius, :ironruby do
+  not_compliant_on :ironruby do
     it "returns subclass instance on Array subclasses" do
-      ArraySpecs::MyArray[1, 2, 3].reject { |x| x % 2 == 0 }.class.should == ArraySpecs::MyArray
+      ArraySpecs::MyArray[1, 2, 3].reject { |x| x % 2 == 0 }.should be_kind_of(ArraySpecs::MyArray)
     end
   end
 
-  deviates_on :rubinius, :ironruby do
+  deviates_on :ironruby do
     it "does not return subclass instance on Array subclasses" do
-      ArraySpecs::MyArray[1, 2, 3].reject { |x| x % 2 == 0 }.class.should == Array
+      ArraySpecs::MyArray[1, 2, 3].reject { |x| x % 2 == 0 }.should be_kind_of(Array)
     end
   end
   
-  ruby_version_is '' ... '1.8.7' do
-    it 'raises a LocalJumpError if no block given' do
-      lambda{ [1,2].reject }.should raise_error(LocalJumpError)
-    end
-  end
-  ruby_version_is '1.8.7' do
-    it 'returns an Enumerator if no block given' do
-      [1,2].reject.should be_kind_of(enumerator_class)
-    end
-  end
-  
+  it_behaves_like :enumeratorize, :reject 
 end
 
 describe "Array#reject!" do
@@ -105,15 +96,5 @@ describe "Array#reject!" do
     end
   end
   
-  ruby_version_is '' ... '1.8.7' do
-    it 'raises a LocalJumpError if no block given' do
-      lambda{ [1,2].reject! }.should raise_error(LocalJumpError)
-    end
-  end
-  ruby_version_is '1.8.7' do
-    it 'returns an Enumerator if no block given' do
-      [1,2].reject!.should be_kind_of(enumerator_class)
-    end
-  end
-  
+  it_behaves_like :enumeratorize, :reject!
 end

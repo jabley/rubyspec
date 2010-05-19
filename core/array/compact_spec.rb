@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Array#compact" do
   it "returns a copy of array with all nil elements removed" do
@@ -19,7 +19,7 @@ describe "Array#compact" do
   end
 
   it "returns subclass instance for Array subclasses" do
-    ArraySpecs::MyArray[1, 2, 3, nil].compact.class.should == ArraySpecs::MyArray
+    ArraySpecs::MyArray[1, 2, 3, nil].compact.should be_kind_of(ArraySpecs::MyArray)
   end
 
   it "keeps tainted status even if all elements are removed" do

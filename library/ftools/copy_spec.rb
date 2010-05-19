@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 ruby_version_is ""..."1.9" do
 
@@ -6,10 +6,14 @@ ruby_version_is ""..."1.9" do
 
   describe "File.copy" do
     before(:each) do
-      system "echo 'hello rubinius' > copy_test"
-      system "chmod a+x copy_test"
+      File.open('copy_test', 'w+') do |f|
+        f.puts('hello rubinius')
+      end
+      platform_is_not :windows do
+        system "chmod a+x copy_test"
+      end
     end
-    
+
     after(:each) do
       File.unlink "copy_test"
       File.unlink "copy_test_dest" rescue nil

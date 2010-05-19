@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Enumerable#grep" do
   before(:each) do
@@ -22,5 +22,10 @@ describe "Enumerable#grep" do
     EnumerableSpecs::EachDefiner.new().grep(1).should == []
     @a.grep(3..7).should == [4,6]
     @a.grep(3..7) {|a| a+1}.should == [5,7]
+  end
+
+  it "can use $~ in the block when used with a Regexp" do
+    ary = ["aba", "aba"]
+    ary.grep(/a(b)a/) { $1 }.should == ["b", "b"]
   end
 end

@@ -1,25 +1,22 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/../../shared/file/symlink'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../../../shared/file/symlink', __FILE__)
 
 describe "File.symlink" do
   before :each do
-    @file = "test.txt"
-    @link = "test.lnk"
-    File.delete(@link) if File.exist?(@link)
-    File.delete(@file) if File.exist?(@file)
-    File.open(@file,"w+")
+    @file = tmp("file_symlink.txt")
+    @link = tmp("file_symlink.lnk")
+
+    rm_r @link
+    touch @file
   end
 
   after :each do
-    File.unlink(@link) if File.exist?(@link)
-    File.delete(@file) if File.exist?(@file)
-    @link = nil
+    rm_r @link, @file
   end
 
   platform_is_not :windows do
     it "create a symlink between a source and target file" do
       File.symlink(@file, @link).should == 0
-      File.exists?(@link).should == true
       File.identical?(@file, @link).should == true
     end
 
@@ -55,5 +52,8 @@ end
 
 describe "File.symlink?" do
   it_behaves_like :file_symlink, :symlink?, File
+end
+
+describe "File.symlink?" do
   it_behaves_like :file_symlink_nonexistent, :symlink?, File
 end

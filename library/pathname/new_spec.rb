@@ -1,9 +1,9 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 require 'pathname'
 
 describe "Pathname.new" do
   it "returns a new Pathname Object with 1 argument" do
-    Pathname.new('').class.should == Pathname
+    Pathname.new('').should be_kind_of(Pathname)
   end
 
   it "raises an ArgumentError when called with \0" do

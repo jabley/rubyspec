@@ -1,10 +1,10 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 # The common logarithm, having base 10
 describe "Math.log10" do
   it "returns a float" do 
-    Math.log10(1).class.should == Float
+    Math.log10(1).should be_kind_of(Float)
   end
   
   it "return the base-10 logarithm of the argument" do

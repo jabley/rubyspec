@@ -1,18 +1,15 @@
-require File.dirname(__FILE__) + '/../../../spec_helper'
+require File.expand_path('../../../../spec_helper', __FILE__)
 require 'set'
-require File.dirname(__FILE__) + '/shared/add'
+require File.expand_path('../shared/add', __FILE__)
 
 describe "SortedSet#add" do
   it_behaves_like :sorted_set_add, :add
 
   ruby_bug "redmine #118", "1.9.1" do
     it "takes only values which responds <=>" do
-      lambda { SortedSet[Object.new].add(Object.new) }.should raise_error(ArgumentError)
-
-      obj = mock('x')
-      lambda { SortedSet[obj].add(:aaa) }.should raise_error(ArgumentError)
-      def obj.<=>(o) 1 end
-      lambda { SortedSet[obj].add(:aaa) }.should_not raise_error(ArgumentError)
+      obj = mock('no_comparison_operator')
+      obj.should_receive(:respond_to?).with(:<=>).and_return(false)
+      lambda { SortedSet["hello"].add(obj) }.should raise_error(ArgumentError)
     end
   end
 end

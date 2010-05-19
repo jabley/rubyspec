@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/methods'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/methods', __FILE__)
 
 describe "Time#_load" do
   ruby_bug("http://redmine.ruby-lang.org/issues/show/627", "1.8.7") do
@@ -32,4 +32,8 @@ describe "Time#_load" do
 
     Time._load([high, low].pack("VV")).should == t
   end
+end
+
+describe "Time._load" do
+  it "needs to be reviewed for spec completeness"
 end

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes.rb'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
 
 describe "String#capitalize" do
   it "returns a copy of self with the first character converted to uppercase and the remainder to lowercase" do
@@ -24,8 +24,8 @@ describe "String#capitalize" do
   end
 
   it "returns subclass instances when called on a subclass" do
-    StringSpecs::MyString.new("hello").capitalize.class.should == StringSpecs::MyString
-    StringSpecs::MyString.new("Hello").capitalize.class.should == StringSpecs::MyString
+    StringSpecs::MyString.new("hello").capitalize.should be_kind_of(StringSpecs::MyString)
+    StringSpecs::MyString.new("Hello").capitalize.should be_kind_of(StringSpecs::MyString)
   end
 end
 

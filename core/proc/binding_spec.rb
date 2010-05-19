@@ -1,9 +1,9 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Proc#binding" do
   it "returns a Binding instance" do
     [Proc.new{}, lambda {}, proc {}].each { |p|
-      p.binding.class.should == Binding
+      p.binding.should be_kind_of(Binding)
     }
   end
 

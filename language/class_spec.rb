@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../spec_helper'
-require File.dirname(__FILE__) + '/../fixtures/class'
+require File.expand_path('../../spec_helper', __FILE__)
+require File.expand_path('../../fixtures/class', __FILE__)
 
 ClassSpecsNumber = 12
 
@@ -9,8 +9,8 @@ end
 
 describe "A class definition" do
   it "creates a new class" do
-    ClassSpecs::A.class.should == Class
-    ClassSpecs::A.new.class.should == ClassSpecs::A
+    ClassSpecs::A.should be_kind_of(Class)
+    ClassSpecs::A.new.should be_kind_of(ClassSpecs::A)
   end
   
   it "has no class variables" do

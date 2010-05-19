@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Float#to_s" do
   it "returns a string representation of self, possibly Nan, -Infinity, +Infinity" do
@@ -26,6 +26,18 @@ describe "Float#to_s" do
     it "returns a string representation of self" do
       100000000000000.to_f.to_s.should == "100000000000000.0"
       -100000000000000.to_f.to_s.should == "-100000000000000.0"
+    end
+  end
+
+  ruby_bug "#3273", "1.8.7" do
+    it "outputs the necessary number of digits to represent the float" do
+      0.21611564636388508.to_s.to_f.should == 0.21611564636388508
+    end
+  end
+
+  ruby_bug "#3273", "1.8" do
+    it "outputs a minimal form to represent the float" do
+      0.56.to_s.should == "0.56"
     end
   end
 

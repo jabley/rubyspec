@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 ruby_version_is ""..."1.9" do
 
@@ -6,7 +6,7 @@ ruby_version_is ""..."1.9" do
 
   describe "Complex.new" do
     it "returns a new Complex number" do
-      Complex.new(1, 2).class.should == Complex
+      Complex.new(1, 2).should be_kind_of(Complex)
     end
     
     it "raises a TypeError when one of the given arguments is not Numeric" do
@@ -22,7 +22,7 @@ ruby_version_is ""..."1.9" do
 
   describe "Complex.new!" do
     it "returns a new Complex number" do
-      Complex.new(1, 2).class.should == Complex
+      Complex.new(1, 2).should be_kind_of(Complex)
     end
     
     it "defaults to 0 for the imaginery part" do

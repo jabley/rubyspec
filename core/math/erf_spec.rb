@@ -1,11 +1,11 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 # erf method is the "error function" encountered in integrating the normal 
 # distribution (which is a normalized form of the Gaussian function).
 describe "Math.erf" do
   it "returns a float" do 
-    Math.erf(1).class.should == Float
+    Math.erf(1).should be_kind_of(Float)
   end 
   
   it "returns the error function of the argument" do 

@@ -1,9 +1,10 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/common'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/common', __FILE__)
 
+# TODO: WTF is this using a global?
 describe "YAML.dump" do
   after :each do
-    File.delete $test_file if File.exist? $test_file
+    rm_r $test_file
   end
   
   it "converts an object to YAML and write result to io when io provided" do

@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.expand_path('../../spec_helper', __FILE__)
 
 # Language-level method behaviour
 describe "Redefining a method" do
@@ -219,7 +219,7 @@ describe "A method defined with extreme default arguments" do
     def foo(x = caller())
       x
     end
-    foo.shift.class.should == String
+    foo.shift.should be_kind_of(String)
   end
 
   it "evaluates the defaults in the method's scope" do
@@ -258,7 +258,7 @@ describe "A singleton method defined with extreme default arguments" do
     def a.foo(x = caller())
       x
     end
-    a.foo.shift.class.should == String
+    a.foo.shift.should be_kind_of(String)
   end
 
   it "evaluates the defaults in the singleton scope" do

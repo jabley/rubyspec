@@ -1,14 +1,14 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "File#chmod" do
   before :each do
-    @filename = tmp('i_exist')
+    @filename = tmp('i_exist.exe')
     @file = File.open(@filename, 'w')
   end
 
   after :each do
     @file.close
-    File.delete(@filename) if File.exist?(@filename)
+    rm_r @filename
   end
 
   it "returns 0 if successful" do
@@ -97,13 +97,13 @@ end
 
 describe "File.chmod" do
   before :each do
-    @file = tmp('i_exist')
-    File.open(@file, 'w') {}
+    @file = tmp('i_exist.exe')
+    touch @file
     @count = File.chmod(0755, @file)
   end
 
   after :each do
-    File.delete(@file) if File.exist?(@file)
+    rm_r @file
   end
 
   it "returns the number of files modified" do

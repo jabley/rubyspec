@@ -1,6 +1,6 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/shared/method'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../shared/method', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Kernel#method" do
   it_behaves_like(:kernel_method, :method)
@@ -20,4 +20,18 @@ describe "Kernel#method" do
     @obj.send(:protected_method).should == :protected_method
     @obj.method(:protected_method).should be_an_instance_of(Method)
   end
+
+  it "can call methods created with define_method" do
+    m = @obj.method(:defined_method)
+    m.call.should == :defined
+  end
+
+  ruby_version_is "1.9" do
+    it "can be called even if we only repond_to_missing? method, true" do
+      m = KernelSpecs::RespondViaMissing.new.method(:handled_privately)
+      m.should be_an_instance_of(Method)
+      m.call(1, 2, 3).should == "Done handled_privately([1, 2, 3])"
+    end
+  end
+
 end

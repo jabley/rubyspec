@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 EvalSpecs::A.new.c
 
@@ -252,26 +252,26 @@ describe "Kernel#eval" do
     end
   end
 
-  ruby_version_is ""..."1.9" do
-    it "uses the filename of the binding if none is provided" do
-      eval("__FILE__").should == "(eval)"
-      eval("__FILE__", binding).should == __FILE__
-      eval("__FILE__", binding, "success").should == "success"
-      eval("eval '__FILE__', binding").should == "(eval)"
-      eval("eval '__FILE__', binding", binding).should == __FILE__
-      eval("eval '__FILE__', binding", binding, 'success').should == 'success'
-    end
+  it "uses the filename of the binding if none is provided" do
+    eval("__FILE__").should == "(eval)"
+    eval("__FILE__", binding).should == __FILE__
+    eval("__FILE__", binding, "success").should == "success"
+    eval("eval '__FILE__', binding").should == "(eval)"
+    eval("eval '__FILE__', binding", binding).should == __FILE__
+    eval("eval '__FILE__', binding", binding, 'success').should == 'success'
   end
 
-  ruby_version_is "1.9" do
-    it "uses a filename of (eval) if none is provided" do
-      eval("__FILE__").should == "(eval)"
-      eval("__FILE__", binding).should == "(eval)"
-      eval("__FILE__", binding, "success").should == "success"
-      eval("eval '__FILE__', binding").should == "(eval)"
-      eval("eval '__FILE__', binding", binding).should == "(eval)"
-      eval("eval '__FILE__', binding", binding, 'success').should == '(eval)'
-    end
+  # Found via Rubinius bug github:#149
+  it "should not alter the value of __FILE__ in the binding" do
+    first_time =  EvalSpecs.call_eval
+    second_time = EvalSpecs.call_eval
+
+    # This bug is seen by calling the method twice and comparing the values
+    # of __FILE__ each time. If the bug is present, calling eval will set the
+    # value of __FILE__ to the eval's "filename" argument.
+
+    second_time.should_not == "(eval)"
+    first_time.should == second_time
   end
 
   deviates_on "jruby" do

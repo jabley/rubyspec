@@ -80,6 +80,12 @@ class UserMarshal
   def ==(other) self.class === other and @data == other.data end
 end
 
+class UserMarshalWithClassName < UserMarshal
+  def self.name
+    "Never::A::Real::Class"
+  end
+end
+
 class UserMarshalWithIvar
   attr_reader :data
 
@@ -134,6 +140,15 @@ Struct.new "Pyramid"
 Struct.new "Useful", :a, :b
 
 module MarshalSpec
+  def self.random_data
+    randomizer = Random.new(42)
+    1000.times{randomizer.rand} # Make sure we exhaust his first state of 624 random words
+    dump_data = File.binread(fixture(__FILE__, 'random.dump'))
+    [randomizer, dump_data]
+  rescue => e
+    ["Error when building Random marshal data #{e}", ""]
+  end
+
   DATA = {
     "nil" => [nil, "\004\b0"],
     "1..2" => [(1..2),
@@ -175,16 +190,21 @@ module MarshalSpec
                         "\004\bl-\t\000\000\000\000\000\000\000\200"],
     "Fixnum -2**24" => [-2**24,
                         "\004\bi\375\000\000\000"],
+    "Fixnum -4516727" => [-4516727,
+                          "\004\bi\375\211\024\273"],
     "Fixnum -2**16" => [-2**16,
                         "\004\bi\376\000\000"],
     "Fixnum -2**8" => [-2**8,
                        "\004\bi\377\000"],
     "Fixnum -123" => [-123,
                       "\004\bi\200"],
+    "Fixnum -124" => [-124, "\004\bi\377\204"],
     "Fixnum 0" => [0,
                    "\004\bi\000"],
     "Fixnum 5" => [5,
                    "\004\bi\n"],
+    "Fixnum 122" => [122, "\004\bi\177"],
+    "Fixnum 123" => [123, "\004\bi\001{"],
     "Fixnum 2**8" => [2**8,
                       "\004\bi\002\000\001"],
     "Fixnum 2**16" => [2**16,
@@ -221,6 +241,8 @@ module MarshalSpec
                           "\004\bf\t-inf"],
     "Float 1.0" => [1.0,
                     "\004\bf\0061"],
+    "Float 8323434.342" => [8323434.342,
+                            "\004\bf\0328323434.3420000002\000S\370"],
     "Hash" => [Hash.new,
                "\004\b{\000"],
     "Hash subclass" => [UserHash.new,
@@ -329,6 +351,7 @@ module MarshalSpec
                      "\004\bC:\016UserArray[\000"],
     "Struct" => [Struct::Pyramid.new,
                  "\004\bS:\024Struct::Pyramid\000"],
+    "Random" => random_data,
   }
 end
 

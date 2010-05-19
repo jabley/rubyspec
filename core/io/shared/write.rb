@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../fixtures/classes'
+require File.expand_path('../../fixtures/classes', __FILE__)
 
 describe :io_write, :shared => true do
   before :each do
@@ -13,7 +13,7 @@ describe :io_write, :shared => true do
   after :each do
     @file.close
     @readonly_file.close
-    File.delete(@filename)
+    rm_r @filename
   end
 
   it "coerces the argument to a string using to_s" do
@@ -65,6 +65,6 @@ describe :io_write, :shared => true do
   end
 
   it "raises IOError on closed stream" do
-    lambda { IOSpecs.closed_file.send(@method, "hello") }.should raise_error(IOError)
+    lambda { IOSpecs.closed_io.send(@method, "hello") }.should raise_error(IOError)
   end
 end

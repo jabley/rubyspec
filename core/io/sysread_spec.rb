@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "IO#sysread on a file" do
   before :each do
@@ -13,7 +13,7 @@ describe "IO#sysread on a file" do
   
   after :each do
     @file.close
-    File.delete(@file_name)
+    rm_r @file_name
   end
   
   it "reads the specified number of bytes from the file" do
@@ -86,6 +86,6 @@ describe "IO#sysread on a file" do
   end
 
   it "raises IOError on closed stream" do
-    lambda { IOSpecs.closed_file.sysread(5) }.should raise_error(IOError)
+    lambda { IOSpecs.closed_io.sysread(5) }.should raise_error(IOError)
   end
 end

@@ -1,8 +1,8 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Array.try_convert" do
-  ruby_version_is "1.9" do
+  ruby_version_is "1.8.8" do
     it "returns self for arrays" do
       x = [1,2,3]
       Array.try_convert(x).should equal(x)

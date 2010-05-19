@@ -7,6 +7,9 @@ module ModuleSpecs
   class SubclassSpec
   end
 
+  class RemoveClassVariable
+  end
+
   module LookupModInMod
     INCS = :ethereal
   end
@@ -320,6 +323,16 @@ module ModuleSpecs
   module M2; end
 
   module Autoload
+    def self.use_ex1
+      begin
+        begin
+          raise "test exception"
+        rescue ModuleSpecs::Autoload::EX1
+        end
+      rescue RuntimeError
+        return :good
+      end
+    end
   end
 
   # This class isn't inherited from or included in anywhere. It exists to test
@@ -343,6 +356,13 @@ module ModuleSpecs
     def private_method_redefined
       :after_redefinition
     end
+  end
+
+  module CyclicAppendA
+  end
+
+  module CyclicAppendB
+    include CyclicAppendA
   end
 end
 

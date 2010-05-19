@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Integer#lcm" do
   ruby_version_is "1.9" do
@@ -52,9 +52,9 @@ describe "Integer#lcm" do
       lambda { 12.lcm(30, 20) }.should raise_error(ArgumentError)
     end
 
-    it "raises an ArgumentError unless the argument is an Integer" do
-      lambda { 39.lcm(3.8) }.should raise_error(ArgumentError)
-      lambda { 45872.lcm([]) }.should raise_error(ArgumentError)
+    it "raises an TypeError unless the argument is an Integer" do
+      lambda { 39.lcm(3.8)   }.should raise_error(TypeError)
+      lambda { 45872.lcm([]) }.should raise_error(TypeError)
     end  
   end
 end

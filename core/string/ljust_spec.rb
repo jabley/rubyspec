@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes.rb'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
 
 describe "String#ljust with length, padding" do
   it "returns a new string of specified length with self left justified and padded with padstr" do
@@ -72,11 +72,11 @@ describe "String#ljust with length, padding" do
   end
   
   it "returns subclass instances when called on subclasses" do
-    StringSpecs::MyString.new("").ljust(10).class.should == StringSpecs::MyString
-    StringSpecs::MyString.new("foo").ljust(10).class.should == StringSpecs::MyString
-    StringSpecs::MyString.new("foo").ljust(10, StringSpecs::MyString.new("x")).class.should == StringSpecs::MyString
+    StringSpecs::MyString.new("").ljust(10).should be_kind_of(StringSpecs::MyString)
+    StringSpecs::MyString.new("foo").ljust(10).should be_kind_of(StringSpecs::MyString)
+    StringSpecs::MyString.new("foo").ljust(10, StringSpecs::MyString.new("x")).should be_kind_of(StringSpecs::MyString)
     
-    "".ljust(10, StringSpecs::MyString.new("x")).class.should == String
-    "foo".ljust(10, StringSpecs::MyString.new("x")).class.should == String
+    "".ljust(10, StringSpecs::MyString.new("x")).should be_kind_of(String)
+    "foo".ljust(10, StringSpecs::MyString.new("x")).should be_kind_of(String)
   end
 end

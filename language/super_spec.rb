@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/super'
+require File.expand_path('../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/super', __FILE__)
 
 describe "The super keyword" do
   it "calls the method on the calling class" do
@@ -76,6 +76,14 @@ describe "The super keyword" do
     end
   end
 
+  it "calls the superclass method when in a block" do
+    Super::S6.new.here.should == :good
+  end
+
+  it "calls the superclass method when initial method is defined_method'd" do
+    Super::S7.new.here.should == :good
+  end
+
   it "supers up appropriate name even if used for multiple method names" do
     sup = Class.new do
       def a; "a"; end
@@ -116,8 +124,22 @@ describe "The super keyword" do
       Class.new do
         define_method :a do
           super
-        end.should raise_error(RuntimeError) 
+        end.should raise_error(RuntimeError)
       end
     end
+  end
+
+  # Rubinius ticket github#157
+  it "calls method_missing when a superclass method is not found" do
+    lambda {
+      Super::MM_B.new.is_a?(Hash).should == false
+    }.should_not raise_error(NoMethodError)
+  end
+
+  # Rubinius ticket github#180
+  it "respects the original module a method is aliased from" do
+    lambda {
+      Super::Alias3.new.name3.should == [:alias2, :alias1]
+    }.should_not raise_error(RuntimeError)
   end
 end

@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Process.getpriority" do
   platform_is_not :windows do
@@ -10,15 +10,15 @@ describe "Process.getpriority" do
     end
 
     it "gets the scheduling priority for a specified process" do
-      Process.getpriority(Process::PRIO_PROCESS, 0).class.should == Fixnum
+      Process.getpriority(Process::PRIO_PROCESS, 0).should be_kind_of(Fixnum)
     end
 
     it "gets the scheduling priority for a specified process group" do
-      Process.getpriority(Process::PRIO_PGRP, 0).class.should == Fixnum
+      Process.getpriority(Process::PRIO_PGRP, 0).should be_kind_of(Fixnum)
     end
 
     it "gets the scheduling priority for a specified user" do
-      Process.getpriority(Process::PRIO_USER, 0).class.should == Fixnum
+      Process.getpriority(Process::PRIO_USER, 0).should be_kind_of(Fixnum)
     end
   end
 end

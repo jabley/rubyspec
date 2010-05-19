@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Kernel#p" do
   before :all do
@@ -14,6 +14,7 @@ describe "Kernel#p" do
     Kernel.should have_private_instance_method(:p)
   end
   
+  # TODO: fix
   it "flushes output if receiver is a File" do
     filename = tmp("Kernel_p_flush") + $$.to_s
     begin
@@ -31,7 +32,7 @@ describe "Kernel#p" do
         end
       end
     ensure
-      File.delete(filename) rescue nil
+      rm_r filename
     end
   end
 

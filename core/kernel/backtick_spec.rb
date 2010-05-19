@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Kernel#`" do
   it "is a private method" do
@@ -20,13 +20,13 @@ describe "Kernel#`" do
     it "sets $? to the exit status of the executed sub-process" do
       ip = 'world'
       `echo disc #{ip}`
-      $?.class.should == Process::Status
+      $?.should be_kind_of(Process::Status)
       $?.stopped?.should == false
       $?.exited?.should == true
       $?.exitstatus.should == 0
       $?.success?.should == true
       `echo disc #{ip}; exit 99`
-      $?.class.should == Process::Status
+      $?.should be_kind_of(Process::Status)
       $?.stopped?.should == false
       $?.exited?.should == true
       $?.exitstatus.should == 99
@@ -38,13 +38,13 @@ describe "Kernel#`" do
     it "sets $? to the exit status of the executed sub-process" do
       ip = 'world'
       `echo disc #{ip}`
-      $?.class.should == Process::Status
+      $?.should be_kind_of(Process::Status)
       $?.stopped?.should == false
       $?.exited?.should == true
       $?.exitstatus.should == 0
       $?.success?.should == true
       `echo disc #{ip}& exit 99`
-      $?.class.should == Process::Status
+      $?.should be_kind_of(Process::Status)
       $?.stopped?.should == false
       $?.exited?.should == true
       $?.exitstatus.should == 99

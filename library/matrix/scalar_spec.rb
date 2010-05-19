@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 require 'matrix'
 
 describe "Matrix.scalar" do
@@ -10,7 +10,7 @@ describe "Matrix.scalar" do
   end
   
   it "returns a Matrix" do
-    @a.class.should == Matrix
+    @a.should be_kind_of(Matrix)
   end
   
   it "returns a n x n matrix" do
@@ -41,7 +41,7 @@ describe "Matrix.scalar" do
   end
   
   it "returns a Matrix" do
-    @a.class.should == Matrix
+    @a.should be_kind_of(Matrix)
   end
   
   it "returns a square matrix, where the first argument specifies the side of the square" do

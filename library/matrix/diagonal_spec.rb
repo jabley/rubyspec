@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 require 'matrix'
 
 describe "Matrix.diagonal" do
@@ -7,7 +7,12 @@ describe "Matrix.diagonal" do
   end
   
   it "returns an object of type Matrix" do
-    @m.class.should == Matrix
+    @m.should be_kind_of(Matrix)
+  end
+
+  it "returns a square Matrix of the right size" do
+    @m.column_size.should == 5
+    @m.row_size.should == 5
   end
   
   it "sets the diagonal to the arguments" do

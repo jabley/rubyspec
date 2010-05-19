@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Enumerable#cycle" do
   ruby_version_is '1.8.7' do
@@ -13,6 +13,15 @@ describe "Enumerable#cycle" do
         end.should == 42
         bomb.should == 0
       end
+    end
+
+    it "yields successive elements of the array repeatedly" do
+      b = []
+      EnumerableSpecs::Numerous.new(1,2,3).cycle do |elem|
+        b << elem
+        break if b.size == 7
+      end
+      b.should == [1,2,3,1,2,3,1]
     end
 
     describe "passed a number n as an argument" do

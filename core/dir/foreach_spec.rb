@@ -1,7 +1,15 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/common'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/common', __FILE__)
 
 describe "Dir.foreach" do
+  before :all do
+    DirSpecs.create_mock_dirs
+  end
+
+  after :all do
+    DirSpecs.delete_mock_dirs
+  end
+
   it "yields all names in an existing directory to the provided block" do
     a, b = [], []
 
@@ -27,7 +35,7 @@ describe "Dir.foreach" do
   it "raises a SystemCallError if passed a nonexistent directory" do
     lambda { Dir.foreach(DirSpecs.nonexistent) {} }.should raise_error(SystemCallError)
   end
-  
+
   ruby_version_is '' ... '1.8.7' do
     it 'raises a LocalJumpError if no block given' do
       lambda{ Dir.foreach(DirSpecs.mock_dir) }.should raise_error(LocalJumpError)
@@ -36,7 +44,7 @@ describe "Dir.foreach" do
 
   ruby_version_is '1.8.7' do
     it 'returns an Enumerator if no block given' do
-      Dir.foreach(DirSpecs.mock_dir).should be_kind_of(enumerator_class)
+      Dir.foreach(DirSpecs.mock_dir).should be_an_instance_of(enumerator_class)
       Dir.foreach(DirSpecs.mock_dir).to_a.sort.should == DirSpecs.expected_paths
     end
   end

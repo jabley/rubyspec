@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "ARGF.rewind" do
   before :each do
@@ -30,7 +30,7 @@ describe "ARGF.rewind" do
 
   # This fails on all versions as reported in bug #1693. If it's deemed not to
   # be a bug, this guard can be removed
-  ruby_bug "#1693", "1.8.7.174" do
+  ruby_bug "#1693", "1.8.7.248" do
     it "resets ARGF.lineno to 0" do
       argv [@file2_name] do
         ARGF.lineno = 0

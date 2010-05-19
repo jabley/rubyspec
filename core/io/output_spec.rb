@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "IO#<<" do
   it "writes an object to the IO stream" do
@@ -15,7 +15,7 @@ describe "IO#<<" do
    end
 
   it "raises an error if the stream is closed" do
-    io = IOSpecs.closed_file
+    io = IOSpecs.closed_io
     lambda { io << "test" }.should raise_error(IOError)
   end
 

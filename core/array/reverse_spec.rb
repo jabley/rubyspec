@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Array#reverse" do
   it "returns a new array with the elements in reverse order" do
@@ -8,7 +8,7 @@ describe "Array#reverse" do
   end
 
   it "returns subclass instance on Array subclasses" do
-    ArraySpecs::MyArray[1, 2, 3].reverse.class.should == ArraySpecs::MyArray
+    ArraySpecs::MyArray[1, 2, 3].reverse.should be_kind_of(ArraySpecs::MyArray)
   end
 
   it "properly handles recursive arrays" do

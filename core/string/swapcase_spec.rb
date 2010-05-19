@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes.rb'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
 
 describe "String#swapcase" do
   it "returns a new string with all uppercase chars from self converted to lowercase and vice versa" do
@@ -21,8 +21,8 @@ describe "String#swapcase" do
   end
 
   it "returns subclass instances when called on a subclass" do
-    StringSpecs::MyString.new("").swapcase.class.should == StringSpecs::MyString
-    StringSpecs::MyString.new("hello").swapcase.class.should == StringSpecs::MyString
+    StringSpecs::MyString.new("").swapcase.should be_kind_of(StringSpecs::MyString)
+    StringSpecs::MyString.new("hello").swapcase.should be_kind_of(StringSpecs::MyString)
   end
 end
 

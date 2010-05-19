@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Numeric#modulo" do 
   ruby_version_is "".."1.9" do
@@ -19,5 +19,17 @@ describe "Numeric#modulo" do
       # 200 % 15 == 5
       obj.modulo(15).should == 5
     end
+  end
+end
+
+ruby_version_is "1.9" do
+  describe "Numeric#%" do
+    it "needs to be reviewed for spec completeness"
+  end
+end
+
+ruby_version_is "1.9" do
+  describe "Numeric#modulo" do
+    it "needs to be reviewed for spec completeness"
   end
 end

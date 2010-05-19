@@ -1,18 +1,24 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "IO#printf" do
   before :each do
-    @io = IO.new STDOUT.fileno, 'w'
+    @name = tmp("io_printf.txt")
+    @io = new_io @name
+    @io.sync = true
   end
 
-  it "writes the #sprintf formatted string to the file descriptor" do
-    lambda {
-      @io.printf "%s\n", "look ma, no hands"
-    }.should output_to_fd("look ma, no hands\n", @io)
+  after :each do
+    @io.close unless @io.closed?
+    rm_r @name
+  end
+
+  it "writes the #sprintf formatted string" do
+    @io.printf "%d %s", 5, "cookies"
+    @name.should have_data("5 cookies")
   end
 
   it "raises IOError on closed stream" do
-    lambda { IOSpecs.closed_file.printf("stuff") }.should raise_error(IOError)
+    lambda { IOSpecs.closed_io.printf("stuff") }.should raise_error(IOError)
   end
 end

@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "IO.select" do
   before :each do
@@ -40,7 +40,7 @@ describe "IO.select" do
     result = IO.select [io], [io], nil, 0
     result.should == [[io], [io], []]
     io.close
-    File.delete(filename)
+    rm_r filename
   end
 
   it "invokes to_io on supplied objects that are not IO" do

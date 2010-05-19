@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../fixtures/classes'
+require File.expand_path('../../fixtures/classes', __FILE__)
 
 describe :io_tty, :shared => true do
   with_tty do
@@ -13,6 +13,6 @@ describe :io_tty, :shared => true do
   end
 
   it "raises IOError on closed stream" do
-    lambda { IOSpecs.closed_file.send @method }.should raise_error(IOError)
+    lambda { IOSpecs.closed_io.send @method }.should raise_error(IOError)
   end
 end

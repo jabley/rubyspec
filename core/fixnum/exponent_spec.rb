@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Fixnum#**" do
   it "returns self raised to the given power" do
@@ -10,6 +10,18 @@ describe "Fixnum#**" do
     (5 ** -1).to_f.to_s.should == '0.2'
 
     (2 ** 40).should == 1099511627776
+  end
+
+  it "can raise 1 to a Bignum safely" do
+    big = bignum_value(4611686018427387904)
+    (1 ** big).should == 1
+  end
+
+  it "switches to a Float when the number is too big" do
+    big = bignum_value(4611686018427387904)
+    flt = (2 ** big)
+    flt.should be_kind_of(Float)
+    flt.infinite?.should == 1
   end
 
   conflicts_with :Rational do
@@ -37,4 +49,12 @@ describe "Fixnum#**" do
       lambda { 13 ** :symbol }.should raise_error(TypeError)
     end
   end
+  
+  ruby_version_is '1.9' do
+    it "returns a complex number when negative and raised to a fractional power" do
+      ((-8) ** (1.0/3))      .should be_close(Complex(1, 1.73205), TOLERANCE)
+      ((-8) ** Rational(1,3)).should be_close(Complex(1, 1.73205), TOLERANCE)
+    end
+  end
+  
 end

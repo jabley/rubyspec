@@ -1,9 +1,9 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 require 'prime'
 
 describe "Prime.instance" do
   it "returns a object representing the set of prime numbers" do
-    Prime.instance.class.should == Prime
+    Prime.instance.should be_kind_of(Prime)
   end
 
   it "returns a object with no obsolete features" do

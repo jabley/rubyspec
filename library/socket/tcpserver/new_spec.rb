@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../../spec_helper'
-require File.dirname(__FILE__) + '/../fixtures/classes'
+require File.expand_path('../../../../spec_helper', __FILE__)
+require File.expand_path('../../fixtures/classes', __FILE__)
 
 describe "TCPServer.new" do
   after(:each) do
@@ -52,5 +52,27 @@ describe "TCPServer.new" do
 
     # TODO: This should also accept strings like 'https', but I don't know how to
     # pick such a service port that will be able to reliably bind...
+  end
+  
+  it "raises Errno::EADDRNOTAVAIL when the adress is unknown" do
+    lambda { TCPServer.new("1.2.3.4", 4000) }.should raise_error(Errno::EADDRNOTAVAIL)
+  end
+
+  # There is no way to make this fail-proof on all machines, because
+  # DNS servers like opendns return A records for ANY host, including
+  # traditionally invalidly named ones.
+  quarantine! do
+    it "raises a SocketError when the host is unknown" do
+      lambda {
+        TCPServer.new("--notavalidname", 4000)
+      }.should raise_error(SocketError)
+    end
+  end
+
+  it "raises Errno::EADDRINUSE when address is already in use" do
+    lambda {
+      @server = TCPServer.new('127.0.0.1', SocketSpecs.port)
+      @server = TCPServer.new('127.0.0.1', SocketSpecs.port)
+    }.should raise_error(Errno::EADDRINUSE)
   end
 end

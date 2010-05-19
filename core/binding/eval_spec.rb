@@ -1,23 +1,19 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Binding#eval" do
   ruby_version_is '1.8.7' do
     it "behaves like Kernel.eval(..., self)" do
       obj = BindingSpecs::Demo.new(1)
-      bind1 = obj.get_binding
-      bind2 = obj.dup.get_binding
-      { "@secret += square(3)" => 10,
-        "a" => true,
-        "class Inside ; end ; Inside.name" => "BindingSpecs::Demo::Inside"
-      }.each do |test, result|
-        r1 = bind1.eval(test)
-        r2 = Kernel.eval(test, bind2)
-        r1.should == r2
-        r1.should == result
-      end
+      bind = obj.get_binding
+
+      bind.eval("@secret += square(3)").should == 10
+      bind.eval("a").should be_true
+
+      bind.eval("class Inside; end")
+      bind.eval("Inside.name").should == "BindingSpecs::Demo::Inside"
     end
-  
+
     it "needs to be completed"
   end
 end

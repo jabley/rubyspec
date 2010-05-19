@@ -1,9 +1,8 @@
-require File.dirname(__FILE__) + '/../../../spec_helper'
-require File.dirname(__FILE__) + '/../shared/constants'
+require File.expand_path('../../../../spec_helper', __FILE__)
+require File.expand_path('../../shared/constants', __FILE__)
 require 'openssl'
 
 describe "OpenSSL::HMAC.hexdigest" do
-  include HMACConstants
   it 'returns an SHA1 hex digest' do
     cur_digest = OpenSSL::Digest::Digest.new('SHA1')
     cur_digest.hexdigest.should == HMACConstants::BlankSHA1HexDigest

@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "IO#stat" do
   it "raises IOError on closed stream" do
@@ -7,7 +7,6 @@ describe "IO#stat" do
   end
 
   it "returns a File::Stat object for the stream" do
-    io = IO.new $stderr.fileno
-    io.stat.class.should == File::Stat
+    STDOUT.stat.should be_an_instance_of(File::Stat)
   end
 end

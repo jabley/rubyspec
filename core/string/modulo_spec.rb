@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes.rb'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
 
 describe "String#%" do
   it "formats multiple expressions" do
@@ -105,6 +105,14 @@ describe "String#%" do
     lambda { "%1$1$s" % "foo" }.should raise_error(ArgumentError)
   end
 
+  it "respects positional arguments and precision tokens given for one format specifier" do
+    ("%2$1d" % [1, 0]).should == "0"
+    ("%2$1d" % [0, 1]).should == "1"
+
+    ("%2$.2f" % [1, 0]).should == "0.00"
+    ("%2$.2f" % [0, 1]).should == "1.00"
+  end
+
   it "raises an ArgumentError when multiple width star tokens are given for one format specifier" do
     lambda { "%**s" % [5, 5, 5] }.should raise_error(ArgumentError)
   end
@@ -191,7 +199,7 @@ describe "String#%" do
       "%f", "%g", "%G", "%i", "%o", "%p",
       "%s", "%u", "%x", "%X"
     ].each do |format|
-      (StringSpecs::MyString.new(format) % universal).class.should == String
+      (StringSpecs::MyString.new(format) % universal).should be_kind_of(String)
     end
   end
 
@@ -336,6 +344,30 @@ describe "String#%" do
       ("%04#{f}" % 10).should == "0010"
       ("%*#{f}" % [10, 4]).should == "         4"
     end
+
+    it "supports negative integers using #{format}" do
+      ("%#{f}" % -5).should == "-5"
+      ("%3#{f}" % -5).should == " -5"
+      ("%03#{f}" % -5).should == "-05"
+      ("%+03#{f}" % -5).should == "-05"
+      ("%-3#{f}" % -5).should == "-5 "
+    end
+
+    # The following version inconsistency in negative-integers is explained in
+    # http://ujihisa.blogspot.com/2009/12/string-differs-between-ruby-18-and-19.html
+    ruby_version_is ""..."1.9" do
+      it "supports negative integers using #{format}, giving priority to `0`" do
+        ("%-03#{f}" % -5).should == "-05"
+        ("%+-03#{f}" % -5).should == "-05"
+      end
+    end
+
+    ruby_version_is "1.9" do
+      it "supports negative integers using #{format}, giving priority to `-`" do
+        ("%-03#{f}" % -5).should == "-5 "
+        ("%+-03#{f}" % -5).should == "-5 "
+      end
+    end
   end
 
   it "supports float formats using %e" do
@@ -417,7 +449,7 @@ describe "String#%" do
         ("%E" % (-0e0/0)).should == "NAN"
       end
     end
-    
+
     # TODO: If http://redmine.ruby-lang.org/issues/show/1566 is confirmed, we
     # can guard the behaviour of capitalising Inf and NaN as a bug, and
     # removed the compliance guards.
@@ -438,7 +470,7 @@ describe "String#%" do
         end
       end
     end
-    
+
     ruby_version_is "1.9" do
       it "pads with spaces for %E with Inf, -Inf, and NaN" do
         ("%010E" % -1e1020).should == "      -Inf"
@@ -556,13 +588,15 @@ describe "String#%" do
   end
 
   it "supports string formats using %s" do
+    ("%s" % "hello").should == "hello"
+    ("%s" % "").should == ""
     ("%s" % 10).should == "10"
     ("%1$s" % [10, 8]).should == "10"
     ("%-5s" % 10).should == "10   "
     ("%*s" % [10, 9]).should == "         9"
   end
 
-  it "calls to_s on arguments for %s format" do
+  it "calls to_s on non-String arguments for %s format" do
     obj = mock('obj')
     def obj.to_s() "obj" end
 
@@ -653,7 +687,7 @@ describe "String#%" do
       ("%d" % -(2 ** 64 + 5)).should == "-18446744073709551621"
     end
   end
-  
+
   it "supports hex formats using %x for positive numbers" do
     ("%x" % 10).should == "a"
     ("% x" % 10).should == " a"
@@ -786,7 +820,7 @@ describe "String#%" do
       obj.should_receive(:to_int).and_return(6)
       (format % obj).should == (format % 6)
     end
-    
+
     # 1.9 raises a TypeError for Kernel.Integer(nil), so we version guard this
     # case
     ruby_version_is ""..."1.9" do
@@ -795,7 +829,7 @@ describe "String#%" do
           format = "%" + f
           (format % nil).should == (format % Kernel.Integer(nil))
         end
-      end   
+      end
     end
 
     it "doesn't taint the result for #{format} when argument is tainted" do
@@ -830,7 +864,6 @@ describe "String#%" do
       lambda { format % "." }.should raise_error(ArgumentError)
       lambda { format % "10." }.should raise_error(ArgumentError)
       lambda { format % "5x" }.should raise_error(ArgumentError)
-      lambda { format % "0xA" }.should raise_error(ArgumentError)
       lambda { format % "0b1" }.should raise_error(ArgumentError)
       lambda { format % "10e10.5" }.should raise_error(ArgumentError)
       lambda { format % "10__10" }.should raise_error(ArgumentError)
@@ -839,6 +872,16 @@ describe "String#%" do
       obj = mock('5.0')
       obj.should_receive(:to_f).and_return(5.0)
       (format % obj).should == (format % 5.0)
+    end
+    ruby_version_is ""..."1.9.2" do
+      it "behaves as if calling Kernel#Float for #{format} arguments, when the passed argument is hexadecimal string" do
+        lambda { format % "0xA" }.should raise_error(ArgumentError)
+      end
+    end
+    ruby_version_is "1.9.2" do
+      it "behaves as if calling Kernel#Float for #{format} arguments, when the passed argument is hexadecimal string" do
+        (format % "0xA").should == (format % 0xA)
+      end
     end
 
     it "doesn't taint the result for #{format} when argument is tainted" do

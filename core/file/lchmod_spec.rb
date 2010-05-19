@@ -1,20 +1,19 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "File.lchmod" do
-  platform_is_not :os => [:linux, :windows, :openbsd] do
+  platform_is_not :os => [:linux, :windows, :openbsd, :solaris] do
     before :each do
       @fname = tmp('file_chmod_test')
       @lname = @fname + '.lnk'
-      File.delete @fname rescue nil
-      File.delete @lname rescue nil
-      File.open(@fname, 'w') { |f| f.write "rubinius" }
+
+      touch(@fname) { |f| f.write "rubinius" }
+
+      rm_r @lname
       File.symlink @fname, @lname
     end
     
     after :each do
-      # the link should be removed first
-      File.delete @lname if File.exist? @lname
-      File.delete @fname if File.exist? @fname
+      rm_r @lname, @fname
     end
     
     it "changes the file mode of the link and not of the file" do

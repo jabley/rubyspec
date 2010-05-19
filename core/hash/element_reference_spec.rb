@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Hash#[]" do
   it "returns the value for key" do
@@ -114,4 +114,8 @@ describe "Hash#[]" do
     new_hash(y => 1)[x].should == 1
     x.tainted?.should == true
   end
+end
+
+describe "Hash.[]" do
+  it "needs to be reviewed for spec completeness"
 end

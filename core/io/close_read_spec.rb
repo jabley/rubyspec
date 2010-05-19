@@ -1,6 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
-require 'fileutils'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "IO#close_read" do
 
@@ -44,7 +43,7 @@ describe "IO#close_read" do
 
   it "closes the stream if it is neither writable nor duplexed" do
     io_close_path = @path
-    FileUtils.touch io_close_path
+    touch io_close_path
 
     io = File.open io_close_path
 

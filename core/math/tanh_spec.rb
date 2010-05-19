@@ -1,9 +1,9 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Math.tanh" do
   it "returns a float" do
-    Math.tanh(0.5).class.should == Float
+    Math.tanh(0.5).should be_kind_of(Float)
   end
   
   it "returns the hyperbolic tangent of the argument" do

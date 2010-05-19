@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 require 'matrix'
 
 describe "Matrix.rows" do
@@ -9,7 +9,7 @@ describe "Matrix.rows" do
   end
 
   it "returns a Matrix" do
-    @m.class.should == Matrix
+    @m.should be_kind_of(Matrix)
   end
 
   it "creates a matrix from argument rows" do

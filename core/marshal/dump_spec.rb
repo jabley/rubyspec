@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
-require File.dirname(__FILE__) + '/fixtures/marshal_data'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/marshal_data', __FILE__)
 
 mv = [Marshal::MAJOR_VERSION].pack 'C'
 nv = [Marshal::MINOR_VERSION].pack 'C'
@@ -201,6 +201,21 @@ describe "Marshal.dump" do
     end
   end
 
+  it "favors marshal_dump over _dump" do
+    m = mock("marshaled")
+    m.should_receive(:marshal_dump).and_return(0)
+    m.should_not_receive(:_dump)
+
+    Marshal.dump(m)
+  end
+
+  it "does not use Class#name when using marshal_dump" do
+    u = UserMarshalWithClassName.new
+
+    m = Marshal.dump(u)
+    m.index(u.class.name).should be_nil
+  end
+
   ruby_version_is ""..."1.9" do
     it "dumps an array containing the same objects" do
       s = 'oh'; b = 'hi'; r = //; d = [b, :no, s, :go]; c = String
@@ -272,9 +287,54 @@ describe "Marshal.dump" do
         "#{mv+nv}e:\nMethsS:\x11Struct::Ure2\a:\x06a[\a;\aI\"\ahi\x06:\x06EF:\x06b[\a;\x00@\a"
     end
   end
-end
+  
+  it "returns an untainted string if object is untainted" do
+    obj = Object.new
+    m = Marshal.dump(obj)
+    m.tainted?.should be_false
+  end
+  
+  it "returns a tainted string if object is tainted" do
+    obj = Object.new
+    obj.taint
+    m = Marshal.dump(obj)
+    m.tainted?.should be_true
+  end
+  
+  it "returns a tainted string if object is tainted deep in nested structure" do
+    obj = Object.new
+    a = [[obj]]
+    obj.taint
+    m = Marshal.dump(a)
+    # a is not tainted, but its serialization is
+    a.tainted?.should be_false
+    m.tainted?.should be_true
+  end
 
-describe "Marshal.dump" do
+  ruby_version_is "1.9" do
+    it "returns a trusted string if object is trusted" do
+      x = Object.new
+      s = Marshal.dump(x)
+      s.untrusted?.should be_false
+    end
+
+    it "returns an untrusted string if object is untrusted" do
+      x = Object.new
+      x.untrust
+      s = Marshal.dump(x)
+      s.untrusted?.should be_true
+    end
+
+    it "returns an untrusted string if object is untrusted deep in nested structure" do
+      x = Object.new
+      a = [[x]]
+      x.untrust
+      s = Marshal.dump(a)
+      a.untrusted?.should be_false
+      s.untrusted?.should be_true
+    end
+  end
+  
   ruby_version_is ""..."1.9" do
     MarshalSpec::DATA.each do |description, (object, marshal, attributes)|
       it "dumps a #{description}" do
